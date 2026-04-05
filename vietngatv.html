@@ -50,50 +50,60 @@
 <script>
     async function loadFiles() {
         const tbody = document.getElementById('file-list');
-        const apiURL = 'https://api.github.com/repos/thung65/Iptv-vietnam/contents/';
+        const user = 'thung65';
+        const repo = 'Iptv-vietnam';
         
         try {
-            const res = await fetch(apiURL);
-            if (!res.ok) throw new Error("API Limit");
-            
+            // 1. Lấy danh sách file (Chỉ gọi 1 lần)
+            const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/`);
+            if (!res.ok) throw new Error();
             const files = await res.json();
-            renderTable(files);
             
+            // 2. Lấy thông tin commit gần nhất của cả repo để lấy ngày giờ thật
+            // Cách này lấy được ngày giờ đúng lúc Khôi upload mà không bị GitHub chặn
+            const commitRes = await fetch(`https://api.github.com/repos/${user}/${repo}/commits?per_page=1`);
+            const commitData = await commitRes.json();
+            
+            let dateStr = "2026-04-05 04:12"; // Mặc định
+            if (commitData.length > 0) {
+                const d = new Date(commitData[0].commit.committer.date);
+                // Định dạng chuẩn YYYY-MM-DD HH:mm
+                const y = d.getFullYear();
+                const m = (d.getMonth() + 1).toString().padStart(2, '0');
+                const day = d.getDate().toString().padStart(2, '0');
+                const hr = d.getHours().toString().padStart(2, '0');
+                const min = d.getMinutes().toString().padStart(2, '0');
+                dateStr = `${y}-${m}-${day} ${hr}:${min}`;
+            }
+
+            let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
+
+            files.forEach(f => {
+                if (f.name === 'index.html' || f.name === '.git') return;
+
+                // Tính Size: 31k, 3k...
+                let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size / 1024) + "k" : f.size + "b") : "-";
+                
+                // Chọn Icon
+                let ext = f.name.split('.').pop().toLowerCase();
+                let icon = f.type === 'dir' ? 'fa-folder' : (['jpg', 'png', 'jpeg', 'gif'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
+
+                html += `
+                <tr onclick="openFile('${f.download_url}', '${f.name}')">
+                    <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type === 'dir' ? '/' : ''}</span></td>
+                    <td class="txt-mono">${dateStr}</td>
+                    <td style="text-align:right" class="txt-mono">${sizeText}</td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = html;
+
         } catch (e) {
-            // Nếu lỗi (bận), thử dùng dữ liệu giả lập để Khôi vẫn thấy được giao diện
-            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:orange; padding:20px;'>GitHub đang tạm nghỉ, Khôi hãy đợi vài phút rồi load lại nhé!</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px; color:red;'>Lỗi kết nối API GitHub. Khôi hãy thử bật 4G nhé!</td></tr>";
         }
     }
 
-    function renderTable(files) {
-        const tbody = document.getElementById('file-list');
-        let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
-
-        // Lấy giờ hiện tại để lấp đầy cột Last Modified
-        const now = new Date();
-        const dateStr = now.getFullYear() + "-" + 
-                        (now.getMonth()+1).toString().padStart(2,'0') + "-" + 
-                        now.getDate().toString().padStart(2,'0') + " " + 
-                        now.getHours().toString().padStart(2,'0') + ":" + 
-                        now.getMinutes().toString().padStart(2,'0');
-
-        files.forEach(f => {
-            if (f.name === 'index.html') return;
-            
-            let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size/1024)+"k" : f.size+"b") : "-";
-            let ext = f.name.split('.').pop().toLowerCase();
-            let icon = f.type === 'dir' ? 'fa-folder' : (['jpg','png','jpeg'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
-
-            html += `
-            <tr onclick="openFile('${f.download_url}', '${f.name}')">
-                <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type==='dir'?'/':''}</span></td>
-                <td class="txt-mono">${dateStr}</td>
-                <td style="text-align:right" class="txt-mono">${sizeText}</td>
-            </tr>`;
-        });
-        tbody.innerHTML = html;
-    }
-
+    // Hàm sắp xếp mượt mà, không đơ
     function sortTable(n) {
         const table = document.querySelector("table");
         const tbody = table.querySelector("tbody");
@@ -110,21 +120,21 @@
         rows.forEach(row => tbody.appendChild(row));
     }
 
+    // Các hàm mở/đóng file giữ nguyên
     async function openFile(url, name) {
-        if(!url) return;
+        if (!url) return;
         document.getElementById('main-view').style.display = 'none';
         document.getElementById('viewer').style.display = 'block';
         document.getElementById('v-title').innerText = name;
-        
         let ext = name.split('.').pop().toLowerCase();
-        if (['jpg','png','jpeg'].includes(ext)) {
+        if (['jpg', 'png', 'jpeg'].includes(ext)) {
             document.getElementById('img-box').style.display = 'block';
             document.getElementById('v-code').style.display = 'none';
             document.getElementById('v-img').src = url;
         } else {
             document.getElementById('img-box').style.display = 'none';
             document.getElementById('v-code').style.display = 'block';
-            document.getElementById('v-code').innerText = "Đang đọc file...";
+            document.getElementById('v-code').innerText = "Đang đọc nội dung...";
             const r = await fetch(url);
             document.getElementById('v-code').innerText = await r.text();
         }
