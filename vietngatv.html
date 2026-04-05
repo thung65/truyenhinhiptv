@@ -52,30 +52,31 @@
     async function loadFiles() {
         const tbody = document.getElementById('file-list');
         try {
-            // 1. Lấy danh sách file
-            const resFiles = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
-            const files = await resFiles.json();
+            // Bước 1: Lấy danh sách file
+            const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
+            if (!res.ok) throw new Error();
+            const files = await res.json();
             
-            // 2. Lấy lịch sử thay đổi của cả thư mục (Chỉ gọi 1 lần duy nhất để tránh bị chặn)
-            const resCommits = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/commits?per_page=100');
-            const commits = await resCommits.json();
-
-            let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
-
-            files.forEach(f => {
-                if (f.name === 'index.html') return;
-
-                // TÌM NGÀY GIỜ ĐÚNG CHO TỪNG FILE
-                // Code sẽ lọc trong lịch sử xem file này được sửa lần cuối khi nào
-                const fileCommit = commits.find(c => c.commit.message.includes(f.name)) || commits[0];
-                const d = new Date(fileCommit.commit.committer.date);
-                
+            // Bước 2: Lấy thời gian cập nhật mới nhất của Repo (Chỉ gọi đúng 1 lần này thôi)
+            const repoRes = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/commits?per_page=1');
+            const repoData = await repoRes.json();
+            
+            let dateStr = "2026-04-05 04:12"; // Mặc định nếu lỗi
+            if (repoData.length > 0) {
+                const d = new Date(repoData[0].commit.committer.date);
                 const y = d.getFullYear();
                 const m = (d.getMonth() + 1).toString().padStart(2, '0');
                 const day = d.getDate().toString().padStart(2, '0');
                 const hr = d.getHours().toString().padStart(2, '0');
                 const min = d.getMinutes().toString().padStart(2, '0');
-                const dateStr = `${y}-${m}-${day} ${hr}:${min}`;
+                dateStr = `${y}-${m}-${day} ${hr}:${min}`;
+            }
+
+            let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
+
+            // Bước 3: Hiển thị danh sách file
+            files.forEach(f => {
+                if (f.name === 'index.html') return;
 
                 let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size/1024)+"k" : f.size+"b") : "-";
                 let ext = f.name.split('.').pop().toLowerCase();
@@ -91,20 +92,23 @@
 
             tbody.innerHTML = html;
         } catch (e) { 
-            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Lỗi kết nối GitHub! Thử lại sau nhé Khôi.</td></tr>"; 
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:red; padding:20px;'>Lỗi kết nối GitHub! Khôi hãy thử nhấn F5 lại nhé.</td></tr>"; 
         }
     }
 
+    // Hàm sắp xếp chống đơ trang web
     function sortTable(n) {
         const table = document.querySelector("table");
         const tbody = table.querySelector("tbody");
         const rows = Array.from(tbody.querySelectorAll("tr:not(.no-sort)"));
         const isAsc = table.getAttribute("data-sort-dir") === "asc";
+        
         rows.sort((a, b) => {
             const aVal = a.cells[n].innerText.trim().toLowerCase();
             const bVal = b.cells[n].innerText.trim().toLowerCase();
             return isAsc ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
         });
+
         table.setAttribute("data-sort-dir", isAsc ? "desc" : "asc");
         rows.forEach(row => tbody.appendChild(row));
     }
