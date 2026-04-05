@@ -3,61 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index of /truyenhinhiptv</title>
+    <title>Trình quản lý tệp tự động</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff; margin: 20px; color: #333; }
-        h1 { border-bottom: 1px solid #ccc; padding-bottom: 10px; font-size: 24px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; border-bottom: 2px solid #000; padding: 8px; }
-        td { padding: 8px; border-bottom: 1px solid #eee; }
-        .icon { width: 20px; margin-right: 10px; }
-        a { text-decoration: none; color: #0056b3; font-weight: 500; }
-        a:hover { text-decoration: underline; color: #003d80; }
-        .footer { margin-top: 30px; font-size: 12px; color: #666; border-top: 1px solid #ccc; padding-top: 10px; }
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .file-item { display: block; padding: 12px; border-bottom: 1px dotted #ccc; text-decoration: none; color: #007bff; font-weight: 500; }
+        .file-item:hover { background: #f9f9f9; }
+        .loading { color: #888; font-style: italic; }
     </style>
 </head>
 <body>
 
-<h1>Index of /truyenhinhiptv</h1>
-
-<table>
-    <thead>
-        <tr>
-            <th>Tên tệp</th>
-            <th>Loại</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><img src="https://cdn-icons-png.flaticon.com/128/337/337946.png" class="icon"> <a href="All.m3u">All.m3u</a></td>
-            <td>Playlist</td>
-            <td><a href="All.m3u">Mở/Tải</a></td>
-        </tr>
-
-        <tr>
-            <td><img src="https://cdn-icons-png.flaticon.com/128/2991/2991108.png" class="icon"> <a href="script.php">get_link.php</a></td>
-            <td>PHP Script</td>
-            <td><a href="script.php">Chạy</a></td>
-        </tr>
-        
-        <tr>
-            <td><img src="https://cdn-icons-png.flaticon.com/128/337/337956.png" class="icon"> <a href="huongdan.txt">huongdan.txt</a></td>
-            <td>Text</td>
-            <td><a href="huongdan.txt">Xem</a></td>
-        </tr>
-
-        <tr>
-            <td><img src="https://cdn-icons-png.flaticon.com/128/337/337946.png" class="icon"> <a href="International.m3u">International.m3u</a></td>
-            <td>Playlist</td>
-            <td><a href="International.m3u">Mở/Tải</a></td>
-        </tr>
-    </tbody>
-</table>
-
-<div class="footer">
-    Netlify/2.0 Server at truyenhinhvn.netlify.app Port 443
+<div class="container">
+    <h2>Index of /truyenhinhiptv</h2>
+    <div id="file-list" class="loading">Đang quét danh sách tệp từ GitHub...</div>
 </div>
+
+<script>
+    // Thay 'thung65' và 'truyenhinhiptv' bằng tên thật của bạn nếu có thay đổi
+    const username = 'thung65';
+    const repo = 'truyenhinhiptv';
+    const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/`;
+
+    async function fetchFiles() {
+        try {
+            const response = await fetch(apiUrl);
+            const files = await response.json();
+            const listElement = document.getElementById('file-list');
+            listElement.innerHTML = ''; // Xóa chữ "Đang tải"
+
+            // Sắp xếp: File 'All' lên đầu, 'International' xuống cuối
+            files.sort((a, b) => {
+                if (a.name.toLowerCase().includes('all')) return -1;
+                if (b.name.toLowerCase().includes('all')) return 1;
+                if (a.name.toLowerCase().includes('international')) return 1;
+                if (b.name.toLowerCase().includes('international')) return -1;
+                return 0;
+            });
+
+            files.forEach(file => {
+                // Bỏ qua file index.html và _redirects để danh sách sạch sẽ
+                if (file.name !== 'index.html' && file.name !== '_redirects') {
+                    const a = document.createElement('a');
+                    a.href = file.download_url; // Đây là link để "Bấm vào mở luôn"
+                    a.className = 'file-item';
+                    a.innerHTML = `📄 ${file.name}`;
+                    listElement.appendChild(a);
+                }
+            });
+        } catch (error) {
+            document.getElementById('file-list').innerHTML = 'Lỗi khi tải danh sách tệp!';
+        }
+    }
+
+    fetchFiles();
+</script>
 
 </body>
 </html>
