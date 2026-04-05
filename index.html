@@ -133,50 +133,55 @@
     }
 
     function renderList(data, type) {
-        const body = document.getElementById('main-body');
-        body.innerHTML = '';
+       const body = document.getElementById('main-body');
+       body.innerHTML = '';
 
-        // DẤU BA CHẤM BÊN TRÁI ĐỂ QUAY LẠI
-        const back = document.createElement('tr');
-        back.className = 'file-item';
-        back.innerHTML = `<td class="dot-col">⋯</td><td><span class="file-name">Quay lại</span><span class="file-meta">Thư mục cha</span></td>`;
-        back.onclick = () => { if(currentView === 'files') fetchRepos(); };
-        body.appendChild(back);
+    // 1. HÀNG QUAY LẠI: Chỉ hiện dấu ⋯ bên trái, cột bên phải để trống
+    const back = document.createElement('tr');
+    back.className = 'file-item';
+    back.innerHTML = `
+        <td class="dot-col">⋯</td>
+        <td></td> 
+    `;
+    back.onclick = () => { if(currentView === 'files') fetchRepos(); };
+    body.appendChild(back);
 
-        data.sort((a, b) => {
-            const nA = a.name.toLowerCase(); const nB = b.name.toLowerCase();
-            if(nA.includes('all')) return -1; if(nB.includes('all')) return 1;
-            if(nA.includes('international')) return 1; if(nB.includes('international')) return -1;
-            return 0;
-        });
+    // Sắp xếp: All lên đầu, International xuống cuối
+    data.sort((a, b) => {
+        const nA = a.name.toLowerCase(); const nB = b.name.toLowerCase();
+        if(nA.includes('all')) return -1; if(nB.includes('all')) return 1;
+        if(nA.includes('international')) return 1; if(nB.includes('international')) return -1;
+        return 0;
+    });
 
-        data.forEach(item => {
-            if(['index.html', '_redirects'].includes(item.name)) return;
-            const tr = document.createElement('tr');
-            tr.className = 'file-item';
-            if(item.name.toLowerCase().includes('all')) tr.classList.add('row-all');
-            if(item.name.toLowerCase().includes('international')) tr.classList.add('row-intl');
+    // 2. DANH SÁCH FILE/THƯ MỤC: Chỉ hiện Icon và Tên file
+    data.forEach(item => {
+        if(['index.html', '_redirects'].includes(item.name)) return;
+        const tr = document.createElement('tr');
+        tr.className = 'file-item';
+        
+        // Màu lề trái cho All và International
+        if(item.name.toLowerCase().includes('all')) tr.classList.add('row-all');
+        if(item.name.toLowerCase().includes('international')) tr.classList.add('row-intl');
 
-            // XỬ LÝ ICON 🖼️
-            let icon = '📄'; 
-            const ext = item.name.split('.').pop().toLowerCase();
-            if (type === 'repo') {
-                icon = '📁'; 
-            } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-                icon = '🖼️'; 
-            }
+        // Xác định Icon (📄 cho file, 📁 cho repo, 🖼️ cho ảnh)
+        let icon = '📄'; 
+        const ext = item.name.split('.').pop().toLowerCase();
+        if (type === 'repo') {
+            icon = '📁'; 
+        } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+            icon = '🖼️'; 
+        }
 
-            tr.innerHTML = `
-                <td class="file-icon">${icon}</td>
-                <td>
-                    <span class="file-name">${item.name}</span>
-                    <span class="file-meta">${type === 'repo' ? 'Thư mục' : (item.size/1024).toFixed(1) + ' KB'}</span>
-                </td>
-            `;
-            tr.onclick = () => type === 'repo' ? fetchFiles(item.name) : viewFile(item.download_url, item.name);
-            body.appendChild(tr);
-        });
-    }
+        // Chỉ hiện tên file, không hiện mô tả dung lượng
+        tr.innerHTML = `
+            <td class="file-icon">${icon}</td>
+            <td><span class="file-name">${item.name}</span></td>
+        `;
+        tr.onclick = () => type === 'repo' ? fetchFiles(item.name) : viewFile(item.download_url, item.name);
+        body.appendChild(tr);
+    });
+} 
 
     fetchRepos(); // Khởi chạy ứng dụng
 </script>
