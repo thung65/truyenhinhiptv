@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết - Trần Tất Khôi B</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f4f6f8; --card: #ffffff; --text: #333; --accent: #007bff;
+            --border: #ececec; --item-hover: #f9f9f9; --folder-icon: #ffca28;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        
+        /* NÚT QUAY LẠI Ở GÓC TRÁI TRÊN CÙNG */
+        .top-nav { width: 100%; padding: 15px 20px; background: var(--card); border-bottom: 1px solid var(--border); box-sizing: border-box; }
+        .back-btn { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: bold; display: flex; align-items: center; }
+        .back-btn i { margin-right: 8px; }
+
+        /* PHẦN BIO VÀ NÚT MẠNG XÃ HỘI (THU BÉ & CĂN GIỮA) */
+        .profile-section { text-align: center; padding: 40px 20px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
+        .profile-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); padding: 3px; margin-bottom: 15px; }
+        .profile-name { font-size: 22px; font-weight: bold; margin: 0; text-transform: uppercase; }
+        
+        .social-links { margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 250px; }
+        .social-btn { text-decoration: none; width: 100%; padding: 8px 0; border-radius: 6px; font-size: 12px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; width: 100%; }
+        .btn-fb { background: #1877F2; } .btn-tk { background: #000; } .btn-gh { background: #333; } .btn-yt { background: #F00; }
+        .social-btn i { font-size: 16px; margin-right: 10px; width: 18px; text-align: center; }
+
+        /* DANH SÁCH FILE */
+        .container { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 10px; border: 1px solid var(--border); width: 95%; overflow: hidden; }
+        .file-item { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); transition: 0.2s; }
+        .file-item:hover { background: #f9f9f9; }
+        .file-item i { margin-right: 15px; font-size: 20px; width: 25px; text-align: center; }
+        .icon-file { color: #576574; } .icon-play { color: #007bff; }
+    </style>
+</head>
+<body>
+
+<div class="top-nav">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> QUAY LẠI TRANG CHỦ</a>
+</div>
+
+<div class="profile-section">
+    <img src="https://github.com/thung65.png" class="profile-logo">
+    <h1 style="font-size: 18px; margin: 0; text-transform: uppercase;" id="folder-title">TRẦN TẤT KHÔI</h1>
+    
+    <div class="social-links">
+        <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="social-btn btn-fb"><i class="fab fa-facebook-f"></i> FACEBOOK</a>
+        <a href="https://www.tiktok.com/@tranthai845" target="_blank" class="social-btn btn-tk"><i class="fab fa-tiktok"></i> TIKTOK</a>
+        <a href="https://github.com/thung65" target="_blank" class="social-btn btn-gh"><i class="fab fa-github"></i> GITHUB</a>
+        <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="social-btn btn-yt"><i class="fab fa-youtube"></i> YOUTUBE</a>
+    </div>
+</div>
+
+<div class="container" id="file-list">
+    </div>
+
+<script>
+    const USER = 'thung65';
+    // QUAN TRỌNG: Sửa tên REPO đúng với tên thư mục trên GitHub của bạn
+    const REPO = 'plugin.video.fpttv'; 
+
+    async function loadFiles() {
+        try {
+            const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/`);
+            const data = await res.json();
+            const list = document.getElementById('file-list');
+            
+            list.innerHTML = data.map(file => {
+                if(file.name === 'index.html') return '';
+                let icon = 'fa-file-code icon-file';
+                if(file.name.endsWith('.m3u8') || file.name.endsWith('.m3u')) icon = 'fa-play-circle icon-play';
+                
+                return `
+                    <a href="${file.download_url}" class="file-item" target="_blank">
+                        <i class="fas ${icon}"></i>
+                        <span style="flex-grow:1; font-size: 14px;">${file.name}</span>
+                        <i class="fas fa-download" style="font-size:12px; color:#ccc"></i>
+                    </a>
+                `;
+            }).join('');
+        } catch (e) { console.error("Lỗi tải file"); }
+    }
+    loadFiles();
+</script>
+</body>
+</html>
