@@ -6,101 +6,139 @@
     <title>Index of /Iptv-vietnam/ - Trần Tất Khôi B</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* GIỮ PHONG CÁCH "INDEX OF" KINH ĐIỂN - MÀU TÍM Gu CỦA KHÔI */
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 20px; color: #333; margin: 0; }
-        .container { max-width: 900px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { font-size: 22px; border-bottom: 2px solid #dee2e6; padding-bottom: 15px; color: #007bff; }
+        .container { max-width: 950px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #ddd; }
+        h1 { font-size: 26px; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; color: #555; font-weight: 500; }
         
-        /* Giao diện danh sách file */
-        #main-content { display: block; }
+        /* GIAO DIỆN DANH SÁCH FILE */
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; background: #f8f9fa; border-bottom: 2px solid #dee2e6; color: #555; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; color: #0066cc; text-transform: uppercase; font-size: 13px; }
         td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
-        tr:hover { background: #f1f7ff; cursor: pointer; }
-        .icon { margin-right: 10px; color: #576574; }
+        tr:hover { background: #f9fbff; cursor: pointer; }
+        .icon { margin-right: 10px; color: #8a2be2; font-size: 16px; } /* Màu tím Gu Khôi thích */
 
-        /* Giao diện khung xem file (Viewer) */
-        #viewer { display: none; }
+        /* GIAO DIỆN KHUNG XEM FILE (VIEWER) */
+        #viewer { display: none; margin-top: 20px; border-top: 2px solid #0066cc; }
         .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
-        pre { background: #282c34; color: #abb2bf; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.5; }
+        .v-title { color: #0066cc; font-weight: 600; font-size: 16px; }
+        
+        /* Chế độ xem Code/Văn bản */
+        pre { display: none; background: #282c34; color: #abb2bf; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.5; }
+        
+        /* Chế độ xem Hình ảnh */
+        #image-frame { display: none; text-align: center; background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 5px; }
+        #image-frame img { max-width: 100%; height: auto; border: 2px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        
         .btn-close { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
         .footer { margin-top: 30px; font-size: 12px; color: #888; text-align: center; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-content">
-    <h1><i class="fas fa-folder-open"></i> Index of /Iptv-vietnam/</h1>
+<div class="container" id="main-list">
+    <h1><i class="fas fa-folder-open icon"></i> Index of /Iptv-vietnam/</h1>
     <table>
         <thead>
             <tr>
-                <th>Tên File</th>
-                <th style="text-align: right;">Xem</th>
+                <th>Name</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody id="file-table">
-            <tr><td colspan="2" style="text-align:center;">Đang kết nối GitHub thung65...</td></tr>
+            <tr><td colspan="2"><i class="fas fa-spinner fa-spin icon"></i> Đang tải danh sách từ thung65...</td></tr>
         </tbody>
     </table>
-    <div class="footer">Proudly Served by Netlify at tatkhoi.id.vn</div>
+    <div class="footer">Proudly Served by Netlify Web Server at tatkhoi.id.vn Port 443</div>
 </div>
 
 <div class="container" id="viewer">
     <div class="v-header">
-        <strong id="v-title" style="color: #007bff;">File nội dung</strong>
+        <strong id="v-title" class="v-title">File nội dung</strong>
         <button class="btn-close" onclick="closeViewer()">ĐÓNG XEM</button>
     </div>
-    <pre id="v-content">Đang tải nội dung...</pre>
+    
+    <pre id="v-content-code">Đang tải...</pre>
+    
+    <div id="image-frame">
+        <img id="v-content-img" src="" alt="Hình ảnh">
+    </div>
 </div>
 
 <script>
-    // Tự động tải danh sách file khi mở trang
+    // BỎ SẠCH CONST - Dùng link trực tiếp repo Iptv-vietnam của Khôi
     async function loadFiles() {
         try {
-            // Nhúng thẳng User và Repo của Khôi vào link
+            // Nhúng thẳng link fetch vào hàm
             const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
             const data = await res.json();
+            
+            // Tìm đúng id="file-table" của bảng
             const table = document.getElementById('file-table');
             
             table.innerHTML = data.map(file => {
                 if(file.name === 'index.html' || file.type === 'dir') return '';
                 
+                // Nhận diện File ảnh để gán Icon phù hợp (PNG/JPG)
+                let ext = file.name.split('.').pop().toLowerCase();
+                let iconClass = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? 'fas fa-file-image' : 'fas fa-file-code';
+                
                 return `
                     <tr onclick="openFile('${file.download_url}', '${file.name}')">
-                        <td><i class="fas fa-file-code icon"></i> ${file.name}</td>
-                        <td style="text-align: right;"><i class="fas fa-eye" style="color:#ccc"></i></td>
+                        <td><i class="${iconClass} icon"></i> ${file.name}</td>
+                        <td style="text-align: right;"><i class="fas fa-eye" style="font-size:12px; color:#ccc"></i> View</td>
                     </tr>
                 `;
             }).join('');
         } catch (e) { 
-            document.getElementById('file-table').innerHTML = "<tr><td>Lỗi tải dữ liệu!</td></tr>"; 
+            document.getElementById('file-table').innerHTML = "<tr><td colspan='2'>Lỗi: Không thể kết nối!</td></tr>";
         }
     }
 
-    // Hàm đọc nội dung file và hiện lên màn hình
+    // HÀM XỬ LÝ MỞ FILE THÔNG MINH (TỰ NHẬN DIỆN ẢNH HOẶC CODE)
     async function openFile(url, name) {
-        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('main-list').style.display = 'none';
         document.getElementById('viewer').style.display = 'block';
-        document.getElementById('v-title').innerText = "Đang xem file: " + name;
-        document.getElementById('v-content').innerText = "Vui lòng đợi, đang lấy nội dung file...";
+        document.getElementById('v-title').innerText = "Đang xem: " + name;
 
-        try {
-            const res = await fetch(url);
-            const text = await res.text();
-            document.getElementById('v-content').innerText = text;
-        } catch (e) {
-            document.getElementById('v-content').innerText = "Lỗi: Không thể hiển thị nội dung file này!";
+        // Reset trạng thái xem
+        document.getElementById('v-content-code').style.display = 'none';
+        document.getElementById('image-frame').style.display = 'none';
+
+        // Lấy đuôi file để nhận diện loại
+        let ext = name.split('.').pop().toLowerCase();
+
+        // 1. Nếu là FILE ẢNH (png, jpg, jpeg)
+        if (ext === 'png' || ext === 'jpg' || ext === 'jpeg') {
+            document.getElementById('image-frame').style.display = 'block';
+            document.getElementById('v-content-img').src = url;
+            document.getElementById('v-title').innerText += " (Chế độ xem Hình ảnh)";
+        
+        // 2. Nếu là FILE VĂN BẢN/CODE (php, m3u, js...)
+        } else {
+            document.getElementById('v-content-code').style.display = 'block';
+            document.getElementById('v-content-code').innerText = "Vui lòng đợi, đang đọc dữ liệu file...";
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                document.getElementById('v-content-code').innerText = text;
+                document.getElementById('v-title').innerText += " (Chế độ xem Code)";
+            } catch (e) {
+                document.getElementById('v-content-code').innerText = "Lỗi: Không thể hiển thị nội dung file này!";
+            }
         }
     }
 
-    // Hàm quay lại danh sách
+    // Hàm quay lại danh sách chính
     function closeViewer() {
+        // Reset ảnh để lần sau mở ảnh khác không bị lag ảnh cũ
+        document.getElementById('v-content-img').src = "";
+        
         document.getElementById('viewer').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('main-list').style.display = 'block';
     }
 
     loadFiles();
 </script>
-
 </body>
 </html>
