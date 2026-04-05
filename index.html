@@ -3,60 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trình quản lý tệp tự động</title>
+    <title>Hệ Thống Kho IPTV - thung65</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
-        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .file-item { display: block; padding: 12px; border-bottom: 1px dotted #ccc; text-decoration: none; color: #007bff; font-weight: 500; }
-        .file-item:hover { background: #f9f9f9; }
-        .loading { color: #888; font-style: italic; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
+        .header { background: #1a73e8; color: white; padding: 25px; text-align: center; font-size: 22px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 15px; text-align: left; color: #5f6368; font-size: 13px; border-bottom: 2px solid #eee; }
+        td { padding: 15px; border-bottom: 1px solid #eee; }
+        .repo-link { text-decoration: none; color: #1a73e8; font-weight: bold; display: flex; align-items: center; }
+        .repo-link:hover { text-decoration: underline; }
+        .badge { background: #e8f0fe; color: #1967d2; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+        .date { color: #70757a; font-size: 13px; }
+        /* Đánh dấu All và International */
+        .all-row { background: #fff9c4 !important; }
+        .intl-row { background: #e8f5e9 !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Index of /truyenhinhiptv</h2>
-    <div id="file-list" class="loading">Đang quét danh sách tệp từ GitHub...</div>
+    <div class="header">📂 TỔNG HỢP CÁC KHO DỮ LIỆU (REPOS)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên Nhóm (Kho)</th>
+                <th>Dung lượng</th>
+                <th>Cập nhật lần cuối</th>
+            </tr>
+        </thead>
+        <tbody id="repo-list">
+            </tbody>
+    </table>
 </div>
 
 <script>
-    // Thay 'thung65' và 'truyenhinhiptv' bằng tên thật của bạn nếu có thay đổi
-    const username = 'thung65';
-    const repo = 'truyenhinhiptv';
-    const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/`;
+    const GITHUB_USER = 'thung65';
+    // Link API lấy tất cả các nhóm của bạn
+    const REPO_API = `https://api.github.com/users/${GITHUB_USER}/repos?sort=updated`;
 
-    async function fetchFiles() {
+    function formatSize(kb) {
+        if (kb < 1024) return kb + ' KB';
+        return (kb / 1024).toFixed(2) + ' MB';
+    }
+
+    async function fetchRepos() {
         try {
-            const response = await fetch(apiUrl);
-            const files = await response.json();
-            const listElement = document.getElementById('file-list');
-            listElement.innerHTML = ''; // Xóa chữ "Đang tải"
+            const response = await fetch(REPO_API);
+            let repos = await response.json();
+            const listBody = document.getElementById('repo-list');
+            listBody.innerHTML = '';
 
-            // Sắp xếp: File 'All' lên đầu, 'International' xuống cuối
-            files.sort((a, b) => {
-                if (a.name.toLowerCase().includes('all')) return -1;
-                if (b.name.toLowerCase().includes('all')) return 1;
-                if (a.name.toLowerCase().includes('international')) return 1;
-                if (b.name.toLowerCase().includes('international')) return -1;
+            // Sắp xếp theo ý bạn: Nhóm có chữ 'All' lên đầu, 'International' xuống cuối
+            repos.sort((a, b) => {
+                const nameA = a.name.toLowerCase();
+                const nameB = b.name.toLowerCase();
+                if (nameA.includes('all')) return -1;
+                if (nameB.includes('all')) return 1;
+                if (nameA.includes('international')) return 1;
+                if (nameB.includes('international')) return -1;
                 return 0;
             });
 
-            files.forEach(file => {
-                // Bỏ qua file index.html và _redirects để danh sách sạch sẽ
-                if (file.name !== 'index.html' && file.name !== '_redirects') {
-                    const a = document.createElement('a');
-                    a.href = file.download_url; // Đây là link để "Bấm vào mở luôn"
-                    a.className = 'file-item';
-                    a.innerHTML = `📄 ${file.name}`;
-                    listElement.appendChild(a);
-                }
+            repos.forEach(repo => {
+                // Chỉ hiện các nhóm công khai và không phải là trang web hiện tại (nếu muốn)
+                const tr = document.createElement('tr');
+                
+                if (repo.name.toLowerCase().includes('all')) tr.className = 'all-row';
+                if (repo.name.toLowerCase().includes('international')) tr.className = 'intl-row';
+
+                const updatedDate = new Date(repo.updated_at).toLocaleDateString('vi-VN');
+
+                tr.innerHTML = `
+                    <td>
+                        <a class="repo-link" href="${repo.html_url}">
+                            📦 ${repo.name}
+                        </a>
+                    </td>
+                    <td><span class="badge">${formatSize(repo.size)}</span></td>
+                    <td class="date">${updatedDate}</td>
+                `;
+                listBody.appendChild(tr);
             });
         } catch (error) {
-            document.getElementById('file-list').innerHTML = 'Lỗi khi tải danh sách tệp!';
+            document.getElementById('repo-list').innerHTML = '<tr><td colspan="3">Không thể tải danh sách nhóm!</td></tr>';
         }
     }
 
-    fetchFiles();
+    fetchRepos();
 </script>
 
 </body>
