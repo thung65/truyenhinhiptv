@@ -3,97 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Kho IPTV</title>
+    <title>IPTV File Browser</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 15px; }
-        .container { max-width: 900px; margin: auto; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
-        .header { background: #1a73e8; color: white; padding: 20px; text-align: center; font-size: 20px; font-weight: bold; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; margin: 0; padding: 15px; }
+        .container { max-width: 900px; margin: auto; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
+        .nav-bar { background: #1a73e8; color: white; padding: 15px; display: flex; align-items: center; }
+        .nav-bar a { color: white; text-decoration: none; font-weight: bold; margin-right: 10px; }
         
-        .repo-item { border-bottom: 1px solid #eee; }
-        .repo-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; cursor: pointer; background: #fff; transition: 0.3s; }
-        .repo-header:hover { background: #f8f9fa; }
-        .repo-name { font-weight: bold; color: #1a73e8; display: flex; align-items: center; }
-        .repo-name::before { content: '📦'; margin-right: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; background: #f1f3f4; font-size: 13px; color: #5f6368; border-bottom: 2px solid #ddd; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 15px; }
+        tr:hover { background: #fdfdfd; }
+
+        .item-link { text-decoration: none; color: #1a73e8; font-weight: 500; display: flex; align-items: center; }
+        .item-link:hover { text-decoration: underline; }
+        .size-tag { background: #e8f0fe; color: #1967d2; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
         
-        .file-list { display: none; background: #fafafa; padding: 0 15px 15px 40px; border-top: 1px dashed #ddd; }
-        .file-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; text-decoration: none; color: #333; }
-        .file-item:hover { color: #1a73e8; }
-        
-        .badge { background: #e8f0fe; color: #1967d2; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
-        .all-special { background: #fffde7 !important; }
-        .intl-special { background: #f1f8e9 !important; }
-        .active .file-list { display: block; }
+        /* Sắp xếp All và International */
+        .all-item { background: #fffde7 !important; }
+        .intl-item { background: #f1f8e9 !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">📁 TRÌNH DUYỆT KHO TỆP IPTV</div>
-    <div id="main-content">Đang quét các nhóm hàng...</div>
+    <div class="nav-bar" id="nav-bar">
+        <a href="?">🏠 Trang chủ</a> <span id="path-name"></span>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th id="col-name">Tên Nhóm / Tệp</th>
+                <th>Dung lượng</th>
+                <th>Cập nhật</th>
+            </tr>
+        </thead>
+        <tbody id="content-list">
+            <tr><td colspan="3">Đang truy xuất dữ liệu...</td></tr>
+        </tbody>
+    </table>
 </div>
 
 <script>
     const GITHUB_USER = 'thung65';
+    const params = new URLSearchParams(window.location.search);
+    const currentRepo = params.get('repo');
+    const listBody = document.getElementById('content-list');
 
-    async function fetchRepos() {
-        const response = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated`);
-        let repos = await response.json();
-        const container = document.getElementById('main-content');
-        container.innerHTML = '';
-
-        // Sắp xếp nhóm: All đầu, International cuối
-        repos.sort((a, b) => {
-            if (a.name.toLowerCase().includes('all')) return -1;
-            if (b.name.toLowerCase().includes('all')) return 1;
-            if (a.name.toLowerCase().includes('international')) return 1;
-            if (b.name.toLowerCase().includes('international')) return -1;
-            return 0;
-        });
-
-        for (let repo of repos) {
-            const repoDiv = document.createElement('div');
-            repoDiv.className = 'repo-item';
-            if(repo.name.toLowerCase().includes('all')) repoDiv.classList.add('all-special');
-            if(repo.name.toLowerCase().includes('international')) repoDiv.classList.add('intl-special');
-
-            repoDiv.innerHTML = `
-                <div class="repo-header" onclick="toggleRepo(this, '${repo.name}')">
-                    <span class="repo-name">${repo.name}</span>
-                    <span class="badge">${repo.size} KB</span>
-                </div>
-                <div class="file-list" id="files-${repo.name}">Đang tải tệp...</div>
-            `;
-            container.appendChild(repoDiv);
-        }
+    // Hàm đổi byte sang size
+    function formatSize(s) {
+        if (!s) return '--';
+        if (s < 1024) return s + ' B';
+        return (s / 1024).toFixed(1) + ' KB';
     }
 
-    async function toggleRepo(element, repoName) {
-        const parent = element.parentElement;
-        const listDiv = document.getElementById(`files-${repoName}`);
-        
-        parent.classList.toggle('active');
+    // Hàm sắp xếp All lên đầu, International xuống cuối
+    function sortItems(arr) {
+        return arr.sort((a, b) => {
+            const nA = (a.name || a.title).toLowerCase();
+            const nB = (b.name || b.title).toLowerCase();
+            if (nA.includes('all')) return -1;
+            if (nB.includes('all')) return 1;
+            if (nA.includes('international')) return 1;
+            if (nB.includes('international')) return -1;
+            return 0;
+        });
+    }
 
-        if (parent.classList.contains('active') && listDiv.innerHTML === 'Đang tải tệp...') {
-            const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${repoName}/contents/`);
-            const files = await res.json();
-            listDiv.innerHTML = '';
+    async function init() {
+        if (!currentRepo) {
+            // HIỆN DANH SÁCH CÁC NHÓM
+            document.getElementById('path-name').innerText = '/ Tất cả nhóm';
+            const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated`);
+            let repos = await res.json();
+            listBody.innerHTML = '';
 
-            files.forEach(file => {
-                if(file.name === 'index.html' || file.name === '_redirects') return;
-                
-                const fileLink = document.createElement('a');
-                fileLink.className = 'file-item';
-                fileLink.href = file.download_url; // Bấm vào file là mở luôn
-                fileLink.innerHTML = `
-                    <span>📄 ${file.name}</span>
-                    <span style="color:#999">${(file.size / 1024).toFixed(1)} KB</span>
+            sortItems(repos).forEach(repo => {
+                const tr = document.createElement('tr');
+                if(repo.name.toLowerCase().includes('all')) tr.className = 'all-item';
+                if(repo.name.toLowerCase().includes('international')) tr.className = 'intl-item';
+
+                tr.innerHTML = `
+                    <td><a class="item-link" href="?repo=${repo.name}">📁 ${repo.name}</a></td>
+                    <td><span class="badge">${repo.size} KB</span></td>
+                    <td>${new Date(repo.updated_at).toLocaleDateString()}</td>
                 `;
-                listDiv.appendChild(fileLink);
+                listBody.appendChild(tr);
+            });
+        } else {
+            // HIỆN FILE TRONG MỘT NHÓM CỤ THỂ
+            document.getElementById('path-name').innerText = `/ ${currentRepo}`;
+            document.getElementById('col-name').innerText = 'Tên Tệp';
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${currentRepo}/contents/`);
+            let files = await res.json();
+            listBody.innerHTML = '';
+
+            sortItems(files).forEach(file => {
+                if(file.name === 'index.html' || file.name === '_redirects') return;
+                const tr = document.createElement('tr');
+                if(file.name.toLowerCase().includes('all')) tr.className = 'all-item';
+                if(file.name.toLowerCase().includes('international')) tr.className = 'intl-item';
+
+                tr.innerHTML = `
+                    <td><a class="item-link" href="${file.download_url}">📄 ${file.name}</a></td>
+                    <td><span class="size-tag">${formatSize(file.size)}</span></td>
+                    <td>Vừa truy xuất</td>
+                `;
+                listBody.appendChild(tr);
             });
         }
     }
 
-    fetchRepos();
+    init();
 </script>
 
 </body>
