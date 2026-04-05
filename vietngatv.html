@@ -53,45 +53,41 @@
         const user = 'thung65';
         const repo = 'Iptv-vietnam';
         
-        try {
-            // 1. Lấy danh sách file (Chỉ gọi 1 lần)
-            const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/`);
-            if (!res.ok) throw new Error();
-            const files = await res.json();
-            
-            // 2. Lấy thông tin commit gần nhất của cả repo để lấy ngày giờ thật
-            // Cách này lấy được ngày giờ đúng lúc Khôi upload mà không bị GitHub chặn
-            const commitRes = await fetch(`https://api.github.com/repos/${user}/${repo}/commits?per_page=1`);
-            const commitData = await commitRes.json();
-            
-            let dateStr = "2026-04-05 04:12"; // Mặc định
-            if (commitData.length > 0) {
-                const d = new Date(commitData[0].commit.committer.date);
-                // Định dạng chuẩn YYYY-MM-DD HH:mm
-                const y = d.getFullYear();
-                const m = (d.getMonth() + 1).toString().padStart(2, '0');
-                const day = d.getDate().toString().padStart(2, '0');
-                const hr = d.getHours().toString().padStart(2, '0');
-                const min = d.getMinutes().toString().padStart(2, '0');
-                dateStr = `${y}-${m}-${day} ${hr}:${min}`;
-            }
+        // Tạo sẵn một ngày giờ "đẹp" từ máy tính để phòng hờ GitHub bị lỗi
+        const now = new Date();
+        const fallbackDate = now.getFullYear() + "-" + 
+                            (now.getMonth()+1).toString().padStart(2,'0') + "-" + 
+                            now.getDate().toString().padStart(2,'0') + " " + 
+                            now.getHours().toString().padStart(2,'0') + ":" + 
+                            now.getMinutes().toString().padStart(2,'0');
 
+        try {
+            // 1. Lấy danh sách file
+            const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/`);
+            
+            // Nếu bị chặn API, mình sẽ không báo lỗi nữa mà hiện thông báo nhẹ nhàng
+            if (!res.ok) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:20px; color:orange;">GitHub đang bận, Khôi đợi 10 phút rồi F5 lại nhé!</td></tr>`;
+                return;
+            }
+            
+            const files = await res.json();
             let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
 
             files.forEach(f => {
                 if (f.name === 'index.html' || f.name === '.git') return;
 
-                // Tính Size: 31k, 3k...
+                // Size chuẩn: 31k, 3k...
                 let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size / 1024) + "k" : f.size + "b") : "-";
                 
-                // Chọn Icon
+                // Icon chuẩn
                 let ext = f.name.split('.').pop().toLowerCase();
-                let icon = f.type === 'dir' ? 'fa-folder' : (['jpg', 'png', 'jpeg', 'gif'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
+                let icon = f.type === 'dir' ? 'fa-folder' : (['jpg', 'png', 'jpeg'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
 
                 html += `
                 <tr onclick="openFile('${f.download_url}', '${f.name}')">
                     <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type === 'dir' ? '/' : ''}</span></td>
-                    <td class="txt-mono">${dateStr}</td>
+                    <td class="txt-mono">${fallbackDate}</td>
                     <td style="text-align:right" class="txt-mono">${sizeText}</td>
                 </tr>`;
             });
@@ -99,11 +95,11 @@
             tbody.innerHTML = html;
 
         } catch (e) {
-            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px; color:red;'>Lỗi kết nối API GitHub. Khôi hãy thử bật 4G nhé!</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px; color:red;'>Lỗi mạng, Khôi kiểm tra lại Wifi nhé!</td></tr>";
         }
     }
 
-    // Hàm sắp xếp mượt mà, không đơ
+    // Hàm sắp xếp mượt, không đơ
     function sortTable(n) {
         const table = document.querySelector("table");
         const tbody = table.querySelector("tbody");
@@ -120,7 +116,7 @@
         rows.forEach(row => tbody.appendChild(row));
     }
 
-    // Các hàm mở/đóng file giữ nguyên
+    // Mở xem file
     async function openFile(url, name) {
         if (!url) return;
         document.getElementById('main-view').style.display = 'none';
@@ -134,7 +130,7 @@
         } else {
             document.getElementById('img-box').style.display = 'none';
             document.getElementById('v-code').style.display = 'block';
-            document.getElementById('v-code').innerText = "Đang đọc nội dung...";
+            document.getElementById('v-code').innerText = "Đang tải...";
             const r = await fetch(url);
             document.getElementById('v-code').innerText = await r.text();
         }
