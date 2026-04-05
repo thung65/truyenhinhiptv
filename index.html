@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giới thiệu - Trần Tất Khôi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --bg: #f4f6f8; --card: #ffffff; --text: #333; --accent: #007bff;
@@ -21,15 +22,23 @@
         .profile-logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); padding: 3px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .profile-name { font-size: 24px; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         
-        .social-links { margin-top: 20px; display: flex; justify-content: center; gap: 12px; }
-        .social-btn { text-decoration: none; padding: 10px 22px; border-radius: 25px; font-size: 12px; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-fb { background: #1877F2; } .btn-yt { background: #FF0000; }
+        /* SOCIAL LINKS CÓ LOGO (DẠNG CỘT) */
+        .social-links { margin-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 12px; max-width: 350px; margin-left: auto; margin-right: auto; }
+        .social-btn { text-decoration: none; width: 100%; padding: 12px 0; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        
+        /* Màu sắc nút và Logo */
+        .btn-fb { background: #1877F2; } 
+        .btn-tk { background: #000000; border: 1px solid #444; }
+        .btn-gh { background: #24292e; }
+        .btn-yt { background: #FF0000; }
+        
+        .social-btn i { font-size: 18px; margin-right: 12px; width: 20px; text-align: center; }
+        .social-btn:hover { opacity: 0.8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
-        /* DANH SÁCH FILE (KHÔNG GẠCH NGANG) */
+        /* DANH SÁCH FILE */
         .container { max-width: 850px; margin: 25px auto; background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; }
         
-        /* HÀNG BA CHẤM */
         .dot-col { width: 50px; text-align: center; font-size: 26px; font-weight: bold; color: var(--accent); }
         .file-item td { padding: 16px; vertical-align: middle; border: none; cursor: pointer; }
         .file-item:hover { background: var(--item-hover); }
@@ -38,7 +47,7 @@
         .col-name { font-weight: 500; font-size: 16px; }
         .col-date { text-align: right; font-size: 12px; color: #999; padding-right: 20px !important; }
 
-        /* VIEW FILE (ẢNH 2) */
+        /* VIEWER */
         #viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; padding: 20px; box-sizing: border-box; overflow: auto; }
         [data-theme="dark"] #viewer { background: #121212; color: #fff; }
         .v-nav { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
@@ -55,10 +64,21 @@
 <div id="index-page">
     <div class="profile-section">
         <img src="https://github.com/thung65.png" class="profile-logo" alt="VMT">
-        <h1 class="profile-name">TRẦN KHÔI B</h1>
+        <h1 class="profile-name">Trần Tất Khôi B</h1>
+        
         <div class="social-links">
-            <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="social-btn btn-fb">FACEBOOK</a>
-            <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="social-btn btn-yt">YOUTUBE</a>
+            <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="social-btn btn-fb">
+                <i class="fab fa-facebook-f"></i> FACEBOOK
+            </a>
+            <a href="https://www.tiktok.com/@tranthai845" target="_blank" class="social-btn btn-tk">
+                <i class="fab fa-tiktok"></i> TIKTOK
+            </a>
+            <a href="https://github.com/thung65" target="_blank" class="social-btn btn-gh">
+                <i class="fab fa-github"></i> GITHUB
+            </a>
+            <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="social-btn btn-yt">
+                <i class="fab fa-youtube"></i> YOUTUBE
+            </a>
         </div>
     </div>
 
@@ -105,14 +125,14 @@
         const body = document.getElementById('list-body');
         body.innerHTML = '';
 
-        // 1. HÀNG BA CHẤM (CHỈ HIỆN ⋯, BÊN CẠNH TRỐNG)
+        // Hàng Ba chấm trống tên
         const back = document.createElement('tr');
         back.className = 'file-item';
         back.innerHTML = `<td class="dot-col">⋯</td><td colspan="2"></td>`;
         back.onclick = () => { if(!isRoot) loadRepos(); };
         body.appendChild(back);
 
-        // 2. SẮP XẾP (All lên đầu, International xuống cuối)
+        // Sắp xếp ưu tiên: "All" lên đầu, "International" xuống cuối
         data.sort((a, b) => {
             const nA = a.name.toLowerCase();
             if(nA.includes('all')) return -1;
@@ -120,7 +140,6 @@
             return 0;
         });
 
-        // 3. DUYỆT TỆP TIN
         data.forEach(item => {
             if(['index.html', '_redirects'].includes(item.name)) return;
             const tr = document.createElement('tr');
@@ -131,7 +150,6 @@
             if (type === 'repo' || item.type === 'dir') icon = '📁';
             else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) icon = '🖼️';
 
-            // Lấy ngày Last Modified (giả lập 2026-04-05 nếu không có dữ liệu)
             let date = item.updated_at ? new Date(item.updated_at).toISOString().split('T')[0] : "2026-04-05";
 
             tr.innerHTML = `
