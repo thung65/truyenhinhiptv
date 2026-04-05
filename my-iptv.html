@@ -68,21 +68,43 @@
             const list = document.getElementById('file-list');
             
             list.innerHTML = data.map(file => {
-                if(file.name === 'index.html') return '';
-                let icon = 'fa-file-code icon-file';
-                if(file.name.endsWith('.m3u8') || file.name.endsWith('.m3u')) icon = 'fa-play-circle icon-play';
-                
-                return `
-                    <a href="${file.download_url}" class="file-item" target="_blank">
-                        <i class="fas ${icon}"></i>
-                        <span style="flex-grow:1; font-size: 14px;">${file.name}</span>
-                        <i class="fas fa-download" style="font-size:12px; color:#ccc"></i>
-                    </a>
-                `;
-            }).join('');
+    if(file.name === 'index.html') return '';
+    
+    // Thay vì dùng thẻ <a>, ta dùng thẻ <div> và thêm onclick để mở tại chỗ
+    return `
+        <div class="file-item" onclick="openFile('${file.download_url}', '${file.name}')">
+            <i class="fas fa-file-code" style="color:#576574"></i>
+            <span style="flex-grow:1; font-size: 14px;">${file.name}</span>
+            <i class="fas fa-eye" style="font-size:12px; color:#ccc"></i>
+        </div>
+    `;
+}).join('');
         } catch (e) { console.error("Lỗi tải file"); }
     }
     loadFiles();
+
+    async function openFile(url, name) {
+    // Ẩn nội dung chính, hiện khung xem file
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('viewer').style.display = 'block';
+        document.getElementById('v-title').innerText = name;
+    
+    document.getElementById('v-content').innerText = "Đang tải nội dung...";
+
+    try {
+        const res = await fetch(url);
+        const content = await res.text();
+        document.getElementById('v-content').innerText = content;
+    } catch (e) {
+        document.getElementById('v-content').innerText = "Lỗi: Không thể đọc file này!";
+    }
+}
+
+// Hàm để đóng khung xem file và quay lại danh sách
+function closeViewer() {
+    document.getElementById('viewer').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+}
 </script>
 </body>
 </html>
