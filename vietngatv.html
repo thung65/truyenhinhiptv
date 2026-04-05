@@ -52,40 +52,61 @@
     async function loadFiles() {
         const tbody = document.getElementById('file-list');
         try {
+            // 1. Lấy danh sách file trong repository
             const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
+            if (!res.ok) throw new Error("Không thể lấy danh sách file");
             const files = await res.json();
             
             let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
 
-            // SỬA LỖI NGÀY THÁNG TẠI ĐÂY
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Cộng 1 để đúng tháng thực tế
-            const date = now.getDate().toString().padStart(2, '0');
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            
-            const dateStr = `${year}-${month}-${date} ${hours}:${minutes}`;
+            // 2. Chạy vòng lặp để lấy ngày giờ thật của từng file
+            const filePromises = files.map(async (f) => {
+                if (f.name === 'index.html') return '';
 
-            files.forEach(f => {
-                if (f.name === 'index.html') return;
-                // Hiển thị Size dạng 31k, 3k
+                // GỌI API ĐỂ LẤY THỜI GIAN CẬP NHẬT THẬT
+                const commitRes = await fetch(`https://api.github.com/repos/thung65/Iptv-vietnam/commits?path=${f.path}&per_page=1`);
+                const commitData = await commitRes.json();
+                
+                let dateDisplay = "---"; 
+                if (commitData && commitData.length > 0) {
+                    // Lấy ngày giờ từ GitHub (chuẩn UTC)
+                    const d = new Date(commitData[0].commit.committer.date);
+                    
+                    // Chuyển sang định dạng YYYY-MM-DD HH:mm
+                    const y = d.getFullYear();
+                    const m = (d.getMonth() + 1).toString().padStart(2, '0');
+                    const day = d.getDate().toString().padStart(2, '0');
+                    const hr = d.getHours().toString().padStart(2, '0');
+                    const min = d.getMinutes().toString().padStart(2, '0');
+                    
+                    dateDisplay = `${y}-${m}-${day} ${hr}:${min}`;
+                }
+
+                // Tính toán kích thước file (Size)
                 let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size/1024)+"k" : f.size+"b") : "-";
+                
+                // Chọn Icon phù hợp
                 let ext = f.name.split('.').pop().toLowerCase();
                 let icon = f.type === 'dir' ? 'fa-folder' : (['jpg','png','jpeg'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
 
-                html += `
+                return `
                 <tr onclick="openFile('${f.download_url}', '${f.name}')">
                     <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type==='dir'?'/':''}</span></td>
-                    <td class="txt-mono">${dateStr}</td>
+                    <td class="txt-mono">${dateDisplay}</td>
                     <td style="text-align:right" class="txt-mono">${sizeText}</td>
                 </tr>`;
             });
-            tbody.innerHTML = html;
-        } catch (e) { tbody.innerHTML = "<tr><td colspan='3'>Lỗi tải dữ liệu!</td></tr>"; }
+
+            // Chờ tất cả các file lấy xong ngày giờ rồi mới hiển thị
+            const results = await Promise.all(filePromises);
+            tbody.innerHTML = html + results.join('');
+
+        } catch (e) { 
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;color:red;'>Lỗi tải dữ liệu thật từ GitHub!</td></tr>"; 
+        }
     }
 
-    // Sắp xếp mượt mà, không bị đơ trang
+    // Hàm sắp xếp khi bấm vào mũi tên (đã tối ưu chống đơ)
     function sortTable(n) {
         const table = document.querySelector("table");
         const tbody = table.querySelector("tbody");
@@ -102,7 +123,9 @@
         rows.forEach(row => tbody.appendChild(row));
     }
 
+    // Hàm mở nội dung file để xem
     async function openFile(url, name) {
+        if(!url) return; 
         let ext = name.split('.').pop().toLowerCase();
         document.getElementById('main-view').style.display = 'none';
         document.getElementById('viewer').style.display = 'block';
@@ -114,6 +137,7 @@
         } else {
             document.getElementById('img-box').style.display = 'none';
             document.getElementById('v-code').style.display = 'block';
+            document.getElementById('v-code').innerText = "Đang tải...";
             const r = await fetch(url);
             document.getElementById('v-code').innerText = await r.text();
         }
