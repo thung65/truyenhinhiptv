@@ -6,69 +6,75 @@
     <title>Giới thiệu - Trần Tất Khôi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; }
-        .header { background: #007bff; color: white; padding: 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .back-btn { color: white; text-decoration: none; margin-right: 20px; font-size: 22px; }
+        /* GIỮ NGUYÊN CSS TRANG CHỦ */
+        :root { --bg: #f4f7f6; --card: #ffffff; --accent: #007bff; --text: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
+        .profile { text-align: center; padding: 40px 20px; width: 100%; background: var(--card); border-bottom: 1px solid #eee; }
+        .avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); padding: 3px; margin-bottom: 15px; }
+        .name { font-size: 22px; font-weight: bold; margin: 0; text-transform: uppercase; }
+        .social-container { display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; margin: 25px 0; }
+        .s-btn { text-decoration: none; color: white; padding: 12px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .fb { background: #1877F2; } .tk { background: #000; } .gh { background: #333; } .yt { background: #F00; }
+        .folder-list { background: var(--card); width: 95%; max-width: 800px; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 50px; }
+        .intro-title { color: var(--accent); font-weight: bold; font-size: 16px; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; display: flex; align-items: center; }
         
-        .container { max-width: 800px; margin: 20px auto; padding: 10px; }
-        .file-item { display: flex; align-items: center; padding: 15px; background: white; margin-bottom: 10px; border-radius: 10px; text-decoration: none; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; }
-        .file-item:hover { transform: translateX(5px); background: #fafafa; }
-        
-        /* Màu sắc cho từng loại Icon */
-        .file-item i { margin-right: 15px; font-size: 22px; width: 25px; text-align: center; }
-        .icon-txt { color: #576574; } /* Màu xám cho file văn bản */
-        .icon-img { color: #eb4d4b; } /* Màu đỏ cho hình ảnh */
-        .icon-play { color: #007bff; } /* Màu xanh cho file stream/video */
-        .icon-code { color: #2ecc71; } /* Màu xanh lá cho file code/php */
+        /* CSS CHO FILE ITEM */
+        .file-item { display: flex; align-items: center; padding: 18px 15px; text-decoration: none; color: var(--text); border-bottom: 1px solid #f8f8f8; }
+        .file-item i { font-size: 24px; margin-right: 20px; width: 30px; text-align: center; }
+        .icon-txt { color: #576574; } .icon-img { color: #eb4d4b; } .icon-play { color: #007bff; }
+        .back-home { color: var(--accent); text-decoration: none; font-size: 14px; margin-bottom: 10px; display: inline-block; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <h2 id="folder-title" style="margin:0; font-size:18px; text-transform: uppercase;">Giới thiệu - Trần Tất Khôi</h2>
+
+<div class="profile">
+    <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Quay lại trang chủ</a>
+    <img src="https://github.com/thung65.png" class="avatar">
+    <div class="name">Trần Tất Khôi B</div>
+    <div class="social-container">
+        <a href="https://www.facebook.com/share/18WousdjEC/" class="s-btn fb"><i class="fab fa-facebook-f"></i> FACEBOOK</a>
+        <a href="https://www.tiktok.com/@tranthai845" class="s-btn tk"><i class="fab fa-tiktok"></i> TIKTOK</a>
+        <a href="https://github.com/thung65" class="s-btn gh"><i class="fab fa-github"></i> GITHUB</a>
+        <a href="https://www.youtube.com/@trantatkhoi2k14" class="s-btn yt"><i class="fab fa-youtube"></i> YOUTUBE</a>
     </div>
+</div>
 
-    <div class="container" id="file-list">
-        <p style="text-align:center;">Đang kiểm tra định dạng file...</p>
-    </div>
+<div class="folder-list">
+    <div class="intro-title" id="folder-name-title"><i class="fas fa-folder-open"></i> ĐANG TẢI...</div>
+    <div id="api-file-list">
+        </div>
+</div>
 
-    <script>
-        const USER = 'thung65';
-        const FOLDER_NAME = 'Iptv-vietnam'; // Bạn đổi tên thư mục tương ứng cho mỗi file HTML
+<script>
+    const USER = 'thung65';
+    const REPO = 'Iptv-vietnam'; // SỬA TÊN THƯ MỤC Ở ĐÂY CHO MỖI FILE
 
-        async function fetchFiles() {
-            const response = await fetch(`https://api.github.com/repos/${USER}/${FOLDER_NAME}/contents/`);
-            const files = await response.json();
-            const list = document.getElementById('file-list');
-            list.innerHTML = '';
+    document.getElementById('folder-name-title').innerHTML = `<i class="fas fa-folder-open"></i> NHÓM: ${REPO}`;
 
-            files.forEach(file => {
-                if(file.name === "index.html") return;
+    async function loadApi() {
+        const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/`);
+        const data = await res.json();
+        const list = document.getElementById('api-file-list');
+        list.innerHTML = '';
 
-                const a = document.createElement('a');
-                a.className = 'file-item';
-                a.href = file.download_url;
-                a.target = "_blank";
+        data.forEach(file => {
+            if(file.name === "index.html") return;
+            const a = document.createElement('a');
+            a.className = 'file-item';
+            a.href = file.download_url;
+            a.target = "_blank";
 
-                // TỰ ĐỘNG PHÂN LOẠI ICON THEO ĐUÔI FILE
-                let iconClass = "fas fa-file-alt icon-txt"; // Mặc định
-                const fileName = file.name.toLowerCase();
+            // Phân loại Icon như bạn muốn
+            let icon = "fas fa-file-alt icon-txt";
+            const n = file.name.toLowerCase();
+            if(n.endsWith('.png') || n.endsWith('.jpg')) icon = "fas fa-image icon-img";
+            else if(n.endsWith('.m3u') || n.endsWith('.m3u8')) icon = "fas fa-play-circle icon-play";
 
-                if (fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.webp')) {
-                    iconClass = "fas fa-image icon-img";
-                } else if (fileName.endsWith('.m3u') || fileName.endsWith('.m3u8') || fileName.endsWith('.mp4')) {
-                    iconClass = "fas fa-play-circle icon-play";
-                } else if (fileName.endsWith('.php') || fileName.endsWith('.js') || fileName.endsWith('.html')) {
-                    iconClass = "fas fa-code icon-code";
-                } else if (fileName.endsWith('.txt')) {
-                    iconClass = "fas fa-file-alt icon-txt";
-                }
-
-                a.innerHTML = `<i class="${iconClass}"></i> <span>${file.name}</span>`;
-                list.appendChild(a);
-            });
-        }
-        fetchFiles();
-    </script>
+            a.innerHTML = `<i class="${icon}"></i> <span style="flex-grow:1">${file.name}</span>`;
+            list.appendChild(a);
+        });
+    }
+    loadApi();
+</script>
 </body>
 </html>
