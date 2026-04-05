@@ -6,21 +6,26 @@
     <title>Chi Tiết - Trần Tất Khôi B</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --bg: #f4f6f8; --card: #ffffff; --text: #333; --accent: #007bff; --border: #ececec; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        :root {
+            --bg: #f4f6f8; --card: #ffffff; --text: #333; --accent: #007bff;
+            --border: #ececec; --item-hover: #f9f9f9; --folder-icon: #ffca28;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
         
         /* NÚT QUAY LẠI Ở GÓC TRÁI TRÊN CÙNG */
         .top-nav { width: 100%; padding: 15px 20px; background: var(--card); border-bottom: 1px solid var(--border); box-sizing: border-box; }
         .back-btn { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: bold; display: flex; align-items: center; }
         .back-btn i { margin-right: 8px; }
 
-        /* PROFILE SECTION CĂN GIỮA */
-        .profile-section { text-align: center; padding: 30px 20px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
-        .profile-logo { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent); padding: 2px; margin-bottom: 10px; }
+        /* PHẦN BIO VÀ NÚT MẠNG XÃ HỘI (THU BÉ & CĂN GIỮA) */
+        .profile-section { text-align: center; padding: 40px 20px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
+        .profile-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); padding: 3px; margin-bottom: 15px; }
+        .profile-name { font-size: 22px; font-weight: bold; margin: 0; text-transform: uppercase; }
         
-        .social-links { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 220px; }
-        .social-btn { text-decoration: none; width: 100%; padding: 7px 0; border-radius: 5px; font-size: 11px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; width: 100%; }
-        .btn-fb { background: #1877F2; } .btn-tk { background: #000; }
+        .social-links { margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 250px; }
+        .social-btn { text-decoration: none; width: 100%; padding: 8px 0; border-radius: 6px; font-size: 12px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; width: 100%; }
+        .btn-fb { background: #1877F2; } .btn-tk { background: #000; } .btn-gh { background: #333; } .btn-yt { background: #F00; }
+        .social-btn i { font-size: 16px; margin-right: 10px; width: 18px; text-align: center; }
 
         /* DANH SÁCH FILE */
         .container { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 10px; border: 1px solid var(--border); width: 95%; overflow: hidden; }
