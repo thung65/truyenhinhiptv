@@ -5,14 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IPTV Manager - Full View</title>
     <style>
-        :root {
-            --bg: #f4f6f9; --card: #ffffff; --text: #333; --nav: #1a73e8;
-            --border: #eee; --item-hover: #f1f3f4;
-        }
-        [data-theme="dark"] {
-            --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --nav: #0d47a1;
-            --border: #333; --item-hover: #2c2c2c;
-        }
+:root {
+    --bg: #f4f6f9; 
+    --card: #ffffff; 
+    --text: #333333;   /* Chữ đen cho nền sáng */
+    --view-bg: #ffffff; /* Nền trắng cho ô xem file */
+    /* ... các dòng khác giữ nguyên ... */
+}
+
+[data-theme="dark"] {
+    --bg: #121212; 
+    --card: #1e1e1e; 
+    --text: #ffffff;    /* Chữ trắng cho nền tối */
+    --view-bg: #000000;  /* Nền đen cho ô xem file */
+    /* ... các dòng khác giữ nguyên ... */
+}
 
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.3s; }
         .container { max-width: 1000px; margin: auto; background: var(--card); border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); overflow: hidden; min-height: 90vh; display: flex; flex-direction: column; }
