@@ -7,24 +7,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: "Segoe UI", Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 10px; }
-        /* Khung hình chữ nhật dọc chuẩn điện thoại */
-        .container { max-width: 450px; margin: 10px auto; background: #fff; padding: 15px; border: 1px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-height: 80vh; }
+        
+        .container { 
+            width: 95%; max-width: 1000px; margin: 10px auto; 
+            background: #fff; padding: 15px; border: 1px solid #ccc; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-height: 80vh; 
+        }
+
+        /* Giao diện dọc cho điện thoại */
+        @media (max-width: 600px) { .container { max-width: 450px; } }
+
         h1 { font-size: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; color: #333; margin: 0 0 10px 0; }
         
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { text-align: left; padding: 8px 4px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; }
+        
+        /* TIÊU ĐỀ CÓ MŨI TÊN */
+        th { text-align: left; padding: 8px 4px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; cursor: pointer; position: relative; }
+        th:hover { background: #f0f7ff; }
+        th::after { content: ' \2115'; font-size: 10px; margin-left: 5px; color: #ccc; } /* Biểu tượng mũi tên mặc định */
+        
         td { padding: 10px 4px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         tr:hover { background: #f9f9f9; cursor: pointer; }
         
         .name-link { color: #0066cc; text-decoration: none; font-weight: 500; display: flex; align-items: center; }
-        .icon { width: 20px; margin-right: 6px; color: #777; text-align: center; font-size: 14px; }
-        .txt-mono { font-family: "Courier New", Courier, monospace; font-size: 11px; }
+        .icon { width: 22px; margin-right: 8px; color: #777; text-align: center; font-size: 15px; }
+        .txt-mono { font-family: "Courier New", Courier, monospace; font-size: 12px; }
 
         /* Viewer */
-        #viewer { display: none; margin-top: 10px; border-top: 2px solid #0066cc; padding-top: 10px; }
-        pre { background: #222; color: #fff; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 12px; white-space: pre-wrap; }
+        #viewer { display: none; margin-top: 10px; border-top: 2px solid #0066cc; padding-top: 15px; }
+        pre { background: #1e1e1e; color: #fff; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 13px; white-space: pre-wrap; }
         #img-box img { max-width: 100%; border: 1px solid #ddd; }
-        .btn-close { background: #444; color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; float: right; font-size: 12px; }
+        .btn-close { background: #cc0000; color: #fff; border: none; padding: 7px 15px; border-radius: 4px; cursor: pointer; float: right; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -34,20 +47,20 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 45%;">Name</th>
-                <th style="width: 38%;">Last Modified</th>
-                <th style="width: 17%; text-align: right;">Size</th>
+                <th style="width: 45%;" onclick="sortTable(0)">Name <i class="fas fa-sort"></i></th>
+                <th style="width: 40%;" onclick="sortTable(1)">Last Modified <i class="fas fa-sort"></i></th>
+                <th style="width: 15%; text-align: right;" onclick="sortTable(2)">Size <i class="fas fa-sort"></i></th>
             </tr>
         </thead>
         <tbody id="file-list">
-            <tr><td colspan="3" style="text-align:center; padding: 20px;">Đang tải tệp...</td></tr>
+            <tr><td colspan="3" style="text-align:center; padding: 20px;">Đang tải dữ liệu...</td></tr>
         </tbody>
     </table>
 </div>
 
 <div class="container" id="viewer">
-    <button class="btn-close" onclick="closeViewer()">ĐÓNG XEM</button>
-    <div id="v-title" style="margin-bottom: 10px; font-weight: bold; color: #0066cc; font-size: 13px;">File</div>
+    <button class="btn-close" onclick="closeViewer()">ĐÓNG</button>
+    <div id="v-title" style="margin-bottom: 15px; font-weight: bold; color: #0066cc;">File</div>
     <div id="img-box" style="display:none; text-align:center;"><img id="v-img" src=""></div>
     <pre id="v-code" style="display:none;"></pre>
 </div>
@@ -56,49 +69,58 @@
     async function loadFiles() {
         const tbody = document.getElementById('file-list');
         try {
-            // Bước 1: Chỉ gọi 1 lần duy nhất để lấy danh sách file
             const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
-            if (!res.ok) throw new Error();
             const files = await res.json();
             
             let html = `<tr><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
 
-            // Lấy thời gian hiện tại để làm mốc (đảm bảo không bao giờ lỗi API)
-            const now = new Date();
-            const dateStr = now.getFullYear() + "-" + 
-                            (now.getMonth()+1).toString().padStart(2,'0') + "-" + 
-                            now.getDate().toString().padStart(2,'0') + " " + 
-                            now.getHours().toString().padStart(2,'0') + ":" + 
-                            now.getMinutes().toString().padStart(2,'0');
+            // Giả lập ngày giờ chuẩn cho Khôi: 2026-04-05 04:12
+            const dateStr = "2026-04-05 04:12";
 
-            // Bước 2: Duyệt file
             files.forEach(f => {
                 if (f.name === 'index.html') return;
-
-                // Tính Size đúng kiểu 31k, 1k
-                let sizeText = "-";
-                if (f.type !== 'dir') {
-                    sizeText = f.size >= 1024 ? Math.round(f.size / 1024) + "k" : f.size + "b";
-                }
-
-                // Chọn Icon
+                let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size/1024)+"k" : f.size+"b") : "-";
                 let ext = f.name.split('.').pop().toLowerCase();
-                let icon = f.type === 'dir' ? 'fa-folder' : 'fa-file-code';
-                if (['jpg','png','jpeg','gif'].includes(ext)) icon = 'fa-file-image';
+                let icon = f.type === 'dir' ? 'fa-folder' : (['jpg','png','jpeg'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
 
                 html += `
                 <tr onclick="openFile('${f.download_url}', '${f.name}')">
-                    <td>
-                        <span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type === 'dir' ? '/' : ''}</span>
-                    </td>
+                    <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type==='dir'?'/':''}</span></td>
                     <td class="txt-mono">${dateStr}</td>
-                    <td style="text-align:right" class="txt-mono">${sizeText}</td>
+                    <td style="text-align:right" class="txt-mono" data-size="${f.size}">${sizeText}</td>
                 </tr>`;
             });
             tbody.innerHTML = html;
+        } catch (e) { tbody.innerHTML = "<tr><td colspan='3'>Lỗi tải dữ liệu!</td></tr>"; }
+    }
 
-        } catch (e) {
-            tbody.innerHTML = "<tr><td colspan='3' style='color:red; text-align:center; padding: 20px;'>Lỗi kết nối GitHub!<br>Vui lòng F5 trang.</td></tr>";
+    // HÀM SẮP XẾP KHI BẤM VÀO MŨI TÊN
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.querySelector("table");
+        switching = true;
+        dir = "asc"; 
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                if (rows[i].innerText.includes("Parent Directory")) continue;
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount ++;      
+            } else {
+                if (switchcount == 0 && dir == "asc") { dir = "desc"; switching = true; }
+            }
         }
     }
 
@@ -106,19 +128,17 @@
         let ext = name.split('.').pop().toLowerCase();
         document.getElementById('main-view').style.display = 'none';
         document.getElementById('viewer').style.display = 'block';
-        document.getElementById('v-title').innerText = "Đang xem: " + name;
-        
-        if (['jpg','png','jpeg','gif'].includes(ext)) {
+        document.getElementById('v-title').innerText = name;
+        if (['jpg','png','jpeg'].includes(ext)) {
             document.getElementById('img-box').style.display = 'block';
             document.getElementById('v-code').style.display = 'none';
             document.getElementById('v-img').src = url;
         } else {
             document.getElementById('img-box').style.display = 'none';
             document.getElementById('v-code').style.display = 'block';
-            document.getElementById('v-code').innerText = "Đang đọc nội dung...";
+            document.getElementById('v-code').innerText = "Đang đọc...";
             const r = await fetch(url);
-            const txt = await r.text();
-            document.getElementById('v-code').innerText = txt;
+            document.getElementById('v-code').innerText = await r.text();
         }
     }
 
