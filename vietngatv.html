@@ -7,37 +7,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: "Segoe UI", Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 10px; }
-        
-        .container { 
-            width: 95%; max-width: 1000px; margin: 10px auto; 
-            background: #fff; padding: 15px; border: 1px solid #ccc; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-height: 80vh; 
-        }
-
-        /* Giao diện dọc cho điện thoại */
+        .container { width: 95%; max-width: 1000px; margin: 10px auto; background: #fff; padding: 15px; border: 1px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-height: 80vh; }
         @media (max-width: 600px) { .container { max-width: 450px; } }
-
-        h1 { font-size: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; color: #333; margin: 0 0 10px 0; }
-        
+        h1 { font-size: 22px; border-bottom: 1px solid #ddd; padding-bottom: 10px; color: #555; margin: 0 0 10px 0; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        
-        /* TIÊU ĐỀ CÓ MŨI TÊN */
-        th { text-align: left; pađin0g: 8px 4px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; cursor: pointer; position: relative; }
+        th { text-align: left; padding: 8px 4px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; cursor: pointer; }
         th:hover { background: #f0f7ff; }
-        th::after { content: ' \2115'; font-size: 10px; margin-left: 5px; color: #ccc; } /* Biểu tượng mũi tên mặc định */
-        
         td { padding: 10px 4px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        tr:hover { background: #f9f9f9; cursor: pointer; }
-        
         .name-link { color: #0066cc; text-decoration: none; font-weight: 500; display: flex; align-items: center; }
-        .icon { width: 22px; margin-right: 8px; color: #777; text-align: center; font-size: 15px; }
-        .txt-mono { font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 13px; /* Chỉnh to nhỏ ở đây */color: #666;    /* Màu xám cho chuyên nghiệp */letter-spacing: 0.5px; /* Khoảng cách giữa các chữ cho dễ đọc */}
-
-        /* Viewer */
+        .icon { width: 22px; margin-right: 8px; color: #777; font-size: 15px; }
+        /* Phông chữ Courier New chuẩn máy tính cho Ngày và Size */
+        .txt-mono { font-family: "Courier New", Courier, monospace; font-size: 13px; color: #555; font-weight: bold; }
         #viewer { display: none; margin-top: 10px; border-top: 2px solid #0066cc; padding-top: 15px; }
         pre { background: #1e1e1e; color: #fff; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 13px; white-space: pre-wrap; }
-        #img-box img { max-width: 100%; border: 1px solid #ddd; }
-        .btn-close { background: #cc0000; color: #fff; border: none; padding: 7px 15px; border-radius: 4px; cursor: pointer; float: right; font-weight: bold; }
+        .btn-close { background: #cc0000; color: #fff; border: none; padding: 7px 15px; border-radius: 4px; cursor: pointer; float: right; }
     </style>
 </head>
 <body>
@@ -53,7 +36,7 @@
             </tr>
         </thead>
         <tbody id="file-list">
-            <tr><td colspan="3" style="text-align:center; padding: 20px;">Đang tải dữ liệu...</td></tr>
+            <tr><td colspan="3" style="text-align:center; padding: 20px;">Đang tải...</td></tr>
         </tbody>
     </table>
 </div>
@@ -61,26 +44,32 @@
 <div class="container" id="viewer">
     <button class="btn-close" onclick="closeViewer()">ĐÓNG</button>
     <div id="v-title" style="margin-bottom: 15px; font-weight: bold; color: #0066cc;">File</div>
-    <div id="img-box" style="display:none; text-align:center;"><img id="v-img" src=""></div>
+    <div id="img-box" style="display:none; text-align:center;"><img id="v-img" src="" style="max-width:100%"></div>
     <pre id="v-code" style="display:none;"></pre>
 </div>
 
 <script>
-    // Hàm lấy danh sách file từ GitHub của thung65
     async function loadFiles() {
         const tbody = document.getElementById('file-list');
         try {
             const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
-            if (!res.ok) throw new Error();
             const files = await res.json();
             
             let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
 
-            // Định dạng ngày giờ chuẩn: 2026-04-05 04:12
-            const dateStr = "2026-04-05 04:12";
+            // SỬA LỖI NGÀY THÁNG TẠI ĐÂY
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Cộng 1 để đúng tháng thực tế
+            const date = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            
+            const dateStr = `${year}-${month}-${date} ${hours}:${minutes}`;
 
             files.forEach(f => {
                 if (f.name === 'index.html') return;
+                // Hiển thị Size dạng 31k, 3k
                 let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size/1024)+"k" : f.size+"b") : "-";
                 let ext = f.name.split('.').pop().toLowerCase();
                 let icon = f.type === 'dir' ? 'fa-folder' : (['jpg','png','jpeg'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
@@ -89,36 +78,30 @@
                 <tr onclick="openFile('${f.download_url}', '${f.name}')">
                     <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type==='dir'?'/':''}</span></td>
                     <td class="txt-mono">${dateStr}</td>
-                    <td style="text-align:right" class="txt-mono" data-val="${f.size}">${sizeText}</td>
+                    <td style="text-align:right" class="txt-mono">${sizeText}</td>
                 </tr>`;
             });
             tbody.innerHTML = html;
         } catch (e) { tbody.innerHTML = "<tr><td colspan='3'>Lỗi tải dữ liệu!</td></tr>"; }
     }
 
-    // HÀM SẮP XẾP MỚI - CHỐNG ĐƠ TRANG WEB
+    // Sắp xếp mượt mà, không bị đơ trang
     function sortTable(n) {
         const table = document.querySelector("table");
         const tbody = table.querySelector("tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr:not(.no-sort)")); // Bỏ qua dòng Parent Directory
+        const rows = Array.from(tbody.querySelectorAll("tr:not(.no-sort)"));
+        const isAsc = table.getAttribute("data-sort-dir") === "asc";
         
-        const isAscending = table.getAttribute("data-sort-dir") === "asc";
-        const direction = isAscending ? 1 : -1;
-
         rows.sort((a, b) => {
-            const aCol = a.cells[n].innerText.trim().toLowerCase();
-            const bCol = b.cells[n].innerText.trim().toLowerCase();
-            return aCol > bCol ? (1 * direction) : (-1 * direction);
+            const aVal = a.cells[n].innerText.trim().toLowerCase();
+            const bVal = b.cells[n].innerText.trim().toLowerCase();
+            return isAsc ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
         });
 
-        // Đảo chiều cho lần bấm sau
-        table.setAttribute("data-sort-dir", isAscending ? "desc" : "asc");
-
-        // Vẽ lại bảng
+        table.setAttribute("data-sort-dir", isAsc ? "desc" : "asc");
         rows.forEach(row => tbody.appendChild(row));
     }
 
-    // Các hàm mở và đóng file giữ nguyên
     async function openFile(url, name) {
         let ext = name.split('.').pop().toLowerCase();
         document.getElementById('main-view').style.display = 'none';
