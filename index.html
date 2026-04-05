@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV File Manager</title>
+    <title>IPTV Manager - Left Dots</title>
     <style>
         :root {
             --bg: #f8f9fa; --card: #ffffff; --text: #212529; --accent: #007bff;
@@ -14,43 +14,39 @@
             --border: #333333; --item-hover: #2c2c2c; --meta: #adb5bd;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.2s; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.2s; }
         .app-container { max-width: 800px; margin: auto; background: var(--card); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; min-height: 90vh; display: flex; flex-direction: column; border: 1px solid var(--border); }
         
-        /* THANH ĐIỀU HƯỚNG CẢM HỨNG ZARCHIVER */
         .toolbar { background: var(--accent); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .toolbar-info { font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .btn-theme { cursor: pointer; background: rgba(255,255,255,0.2); border: none; padding: 6px 10px; border-radius: 8px; color: white; font-size: 16px; }
+        .toolbar-info { font-weight: 500; font-size: 14px; }
+        .btn-theme { cursor: pointer; background: rgba(255,255,255,0.2); border: none; padding: 6px 10px; border-radius: 8px; color: white; }
 
-        /* DANH SÁCH FILE */
-        .file-list { width: 100%; border-collapse: collapse; }
-        .file-item { border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.1s; }
+        table { width: 100%; border-collapse: collapse; }
+        .file-item { border-bottom: 1px solid var(--border); cursor: pointer; }
         .file-item:hover { background: var(--item-hover); }
         .file-item td { padding: 12px 16px; vertical-align: middle; }
 
-        .back-row { background: var(--item-hover); color: var(--accent); font-size: 20px; font-weight: bold; text-align: center; }
+        /* HÀNG BA CHẤM BÊN TRÁI */
+        .back-row td { color: var(--accent); font-size: 22px; font-weight: bold; }
+        .dot-col { width: 40px; text-align: center; padding-right: 0 !important; }
 
-        .file-icon { font-size: 24px; width: 40px; text-align: center; }
+        .file-icon { font-size: 22px; width: 40px; text-align: center; opacity: 0.8; }
         .file-name { font-weight: 500; font-size: 15px; display: block; }
-        .file-meta { font-size: 12px; color: var(--meta); margin-top: 2px; }
+        .file-meta { font-size: 11px; color: var(--meta); margin-top: 2px; }
 
-        /* KHU VỰC XEM NỘI DUNG (VIEWER) */
-        #viewer-container { display: none; flex-grow: 1; padding: 10px; background: var(--bg); animation: fadeIn 0.2s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
+        #viewer-container { display: none; flex-grow: 1; padding: 10px; background: var(--bg); }
         .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 5px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
         .btn-close { background: #dc3545; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; }
         
         #content-box { 
             background: var(--card); color: var(--text); padding: 15px; 
-            border-radius: 8px; overflow: auto; font-family: 'Consolas', 'Courier New', monospace; 
+            border-radius: 8px; overflow: auto; font-family: monospace; 
             font-size: 13px; line-height: 1.5; height: 72vh; border: 1px solid var(--border);
             white-space: pre-wrap; margin: 0;
         }
 
-        #img-box { width: 100%; height: auto; border-radius: 8px; display: none; margin-top: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        #img-box { width: 100%; height: auto; border-radius: 8px; display: none; }
 
-        /* MÀU ĐẶC BIỆT THEO YÊU CẦU */
         .row-all { border-left: 5px solid #ffc107; }
         .row-intl { border-left: 5px solid #28a745; }
     </style>
@@ -59,19 +55,19 @@
 
 <div class="app-container">
     <div class="toolbar">
-        <span id="nav-path" class="toolbar-info">📂 /storage/emulated/0</span>
+        <span id="nav-path" class="toolbar-info">📂 Home</span>
         <button class="btn-theme" onclick="toggleTheme()">🌓</button>
     </div>
     
     <div id="list-wrapper">
-        <table class="file-list">
+        <table>
             <tbody id="main-body"></tbody>
         </table>
     </div>
 
     <div id="viewer-container">
         <div class="viewer-header">
-            <span id="file-title" style="font-size: 13px; font-weight: bold; color: var(--meta);"></span>
+            <span id="file-title" style="font-size: 13px; font-weight: bold; opacity: 0.7;"></span>
             <button class="btn-close" onclick="exitViewer()">✕ ĐÓNG</button>
         </div>
         <img id="img-box" src="">
@@ -112,11 +108,9 @@
         document.getElementById('list-wrapper').style.display = 'none';
         document.getElementById('viewer-container').style.display = 'block';
         document.getElementById('file-title').innerText = name;
-        
         const ext = name.split('.').pop().toLowerCase();
         const img = document.getElementById('img-box');
         const txt = document.getElementById('content-box');
-
         if(['jpg','png','jpeg','webp','gif'].includes(ext)) {
             img.src = url; img.style.display = 'block'; txt.style.display = 'none';
         } else {
@@ -135,14 +129,13 @@
         const body = document.getElementById('main-body');
         body.innerHTML = '';
 
-        // Hàng quay lại (Back row)
+        // HÀNG BA CHẤM BÊN TRÁI ĐỂ QUAY LẠI
         const back = document.createElement('tr');
         back.className = 'file-item back-row';
-        back.innerHTML = `<td colspan="2">⋯</td>`;
+        back.innerHTML = `<td class="dot-col">⋯</td><td><span class="file-name">Quay lại</span></td>`;
         back.onclick = () => { if(currentView === 'files') fetchRepos(); };
         body.appendChild(back);
 
-        // Sắp xếp All và International
         data.sort((a, b) => {
             const nA = a.name.toLowerCase(); const nB = b.name.toLowerCase();
             if(nA.includes('all')) return -1; if(nB.includes('all')) return 1;
@@ -158,7 +151,7 @@
             if(item.name.toLowerCase().includes('international')) tr.classList.add('row-intl');
 
             const icon = type === 'repo' ? '📁' : '📄';
-            const info = type === 'repo' ? 'Repository' : (item.size/1024).toFixed(1) + ' KB';
+            const info = type === 'repo' ? 'Thư mục' : (item.size/1024).toFixed(1) + ' KB';
 
             tr.innerHTML = `
                 <td class="file-icon">${icon}</td>
