@@ -22,7 +22,7 @@
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         
         /* TIÊU ĐỀ CÓ MŨI TÊN */
-        th { text-align: left; padding: 8px 4px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; cursor: pointer; position: relative; }
+        th { text-align: left; pađin0g: 8px 4px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; cursor: pointer; position: relative; }
         th:hover { background: #f0f7ff; }
         th::after { content: ' \2115'; font-size: 10px; margin-left: 5px; color: #ccc; } /* Biểu tượng mũi tên mặc định */
         
@@ -66,15 +66,17 @@
 </div>
 
 <script>
+    // Hàm lấy danh sách file từ GitHub của thung65
     async function loadFiles() {
         const tbody = document.getElementById('file-list');
         try {
             const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
+            if (!res.ok) throw new Error();
             const files = await res.json();
             
-            let html = `<tr><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
+            let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
 
-            // Giả lập ngày giờ chuẩn cho Khôi: 2026-04-05 04:12
+            // Định dạng ngày giờ chuẩn: 2026-04-05 04:12
             const dateStr = "2026-04-05 04:12";
 
             files.forEach(f => {
@@ -87,44 +89,36 @@
                 <tr onclick="openFile('${f.download_url}', '${f.name}')">
                     <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type==='dir'?'/':''}</span></td>
                     <td class="txt-mono">${dateStr}</td>
-                    <td style="text-align:right" class="txt-mono" data-size="${f.size}">${sizeText}</td>
+                    <td style="text-align:right" class="txt-mono" data-val="${f.size}">${sizeText}</td>
                 </tr>`;
             });
             tbody.innerHTML = html;
         } catch (e) { tbody.innerHTML = "<tr><td colspan='3'>Lỗi tải dữ liệu!</td></tr>"; }
     }
 
-// Copy đoạn này dán vào cuối file html của Khôi nhé
-function sortTable(n) {
-    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.querySelector("table");
-    switching = true;
-    dir = "asc"; 
-    while (switching) {
-        switching = false;
-        rows = table.rows;
-        // Bắt đầu từ dòng thứ 2 (bỏ qua tiêu đề và Parent Directory)
-        for (i = 1; i < (rows.length - 1); i++) {
-            if (rows[i].innerText.includes("Parent Directory")) continue;
-            shouldSwitch = false;
-            x = rows[i].getElementsByTagName("TD")[n];
-            y = rows[i + 1].getElementsByTagName("TD")[n];
-            if (dir == "asc") {
-                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
-            } else if (dir == "desc") {
-                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
-            }
-        }
-        if (shouldSwitch) {
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            switching = true;
-            switchcount ++;      
-        } else {
-            if (switchcount == 0 && dir == "asc") { dir = "desc"; switching = true; }
-        }
-    }
-}
+    // HÀM SẮP XẾP MỚI - CHỐNG ĐƠ TRANG WEB
+    function sortTable(n) {
+        const table = document.querySelector("table");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr:not(.no-sort)")); // Bỏ qua dòng Parent Directory
+        
+        const isAscending = table.getAttribute("data-sort-dir") === "asc";
+        const direction = isAscending ? 1 : -1;
 
+        rows.sort((a, b) => {
+            const aCol = a.cells[n].innerText.trim().toLowerCase();
+            const bCol = b.cells[n].innerText.trim().toLowerCase();
+            return aCol > bCol ? (1 * direction) : (-1 * direction);
+        });
+
+        // Đảo chiều cho lần bấm sau
+        table.setAttribute("data-sort-dir", isAscending ? "desc" : "asc");
+
+        // Vẽ lại bảng
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Các hàm mở và đóng file giữ nguyên
     async function openFile(url, name) {
         let ext = name.split('.').pop().toLowerCase();
         document.getElementById('main-view').style.display = 'none';
@@ -137,7 +131,6 @@ function sortTable(n) {
         } else {
             document.getElementById('img-box').style.display = 'none';
             document.getElementById('v-code').style.display = 'block';
-            document.getElementById('v-code').innerText = "Đang đọc...";
             const r = await fetch(url);
             document.getElementById('v-code').innerText = await r.text();
         }
