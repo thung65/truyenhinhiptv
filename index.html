@@ -147,28 +147,34 @@
             return 0;
         });
 
-        data.forEach(item => {
-            if(['index.html', '_redirects'].includes(item.name)) return;
-            const tr = document.createElement('tr');
-            tr.className = 'file-item';
-            if(item.name.toLowerCase().includes('all')) tr.classList.add('row-all');
-            if(item.name.toLowerCase().includes('international')) tr.classList.add('row-intl');
+data.forEach(item => {
+    if(['index.html', '_redirects'].includes(item.name)) return;
+    const tr = document.createElement('tr');
+    tr.className = 'file-item';
 
-            const icon = type === 'repo' ? '📁' : '📄';
-            const info = type === 'repo' ? 'Thư mục' : (item.size/1024).toFixed(1) + ' KB';
+    // --- ĐOẠN MÃ ĐỔI ICON THEO LOẠI FILE ---
+    let icon = '📄'; // Mặc định là file văn bản
+    const ext = item.name.split('.').pop().toLowerCase();
 
-            tr.innerHTML = `
-                <td class="file-icon">${icon}</td>
-                <td>
-                    <span class="file-name">${item.name}</span>
-                    <span class="file-meta">${info}</span>
-                </td>
-            `;
-            tr.onclick = () => type === 'repo' ? fetchFiles(item.name) : viewFile(item.download_url, item.name);
-            body.appendChild(tr);
-        });
+    if (type === 'repo') {
+        icon = '📁'; // Nếu là thư mục (Repository)
+    } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+        icon = '🖼️'; // Nếu là file hình ảnh
     }
+    // --- KẾT THÚC ---
 
+    const info = type === 'repo' ? 'Thư mục' : (item.size/1024).toFixed(1) + ' KB';
+
+    tr.innerHTML = `
+        <td class="file-icon">${icon}</td>
+        <td>
+            <span class="file-name">${item.name}</span>
+            <span class="file-meta">${info}</span>
+        </td>
+    `;
+    tr.onclick = () => type === 'repo' ? fetchFiles(item.name) : viewFile(item.download_url, item.name);
+    body.appendChild(tr);
+});
     fetchRepos();
 </script>
 </body>
