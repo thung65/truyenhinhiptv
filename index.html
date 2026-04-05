@@ -6,185 +6,110 @@
     <title>Giới thiệu - Trần Tất Khôi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root {
-            --bg: #f4f6f8; --card: #ffffff; --text: #333; --accent: #007bff;
-            --border: #ececec; --item-hover: #f9f9f9;
-        }
-        [data-theme="dark"] {
-            --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #3791ff;
-            --border: #333; --item-hover: #2c2c2c;
-        }
+        :root { --bg: #f4f7f6; --card: #ffffff; --accent: #007bff; --text: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
+        
+        .profile { text-align: center; padding: 40px 20px; width: 100%; background: var(--card); border-bottom: 1px solid #eee; }
+        .avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); padding: 3px; margin-bottom: 15px; }
+        .name { font-size: 22px; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
 
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: 0.2s; }
-        
-        /* HEADER BIO-LINK */
-        .profile-section { text-align: center; padding: 40px 20px; background: var(--card); border-bottom: 1px solid var(--border); }
-        .profile-logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); padding: 3px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .profile-name { font-size: 24px; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-        
-        /* SOCIAL LINKS CÓ LOGO (DẠNG CỘT) */
-        .social-links { margin-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 12px; max-width: 350px; margin-left: auto; margin-right: auto; }
-        .social-btn { text-decoration: none; width: 100%; padding: 12px 0; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
-        
-        /* Màu sắc nút và Logo */
-        .btn-fb { background: #1877F2; } 
-        .btn-tk { background: #000000; border: 1px solid #444; }
-        .btn-gh { background: #24292e; }
-        .btn-yt { background: #FF0000; }
-        
-        .social-btn i { font-size: 18px; margin-right: 12px; width: 20px; text-align: center; }
-        .social-btn:hover { opacity: 0.8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .social-container { display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; margin: 25px 0; }
+        .s-btn { text-decoration: none; color: white; padding: 12px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: 0.3s; }
+        .fb { background: #1877F2; } .tk { background: #000000; } .gh { background: #333; } .yt { background: #FF0000; }
+        .s-btn i { margin-right: 12px; font-size: 18px; width: 20px; text-align: center; }
 
-        /* DANH SÁCH FILE */
-        .container { max-width: 850px; margin: 25px auto; background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; }
+        .folder-list { background: var(--card); width: 95%; max-width: 800px; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 50px; }
         
-        .dot-col { width: 50px; text-align: center; font-size: 26px; font-weight: bold; color: var(--accent); }
-        .file-item td { padding: 16px; vertical-align: middle; border: none; cursor: pointer; }
-        .file-item:hover { background: var(--item-hover); }
-        
-        .col-icon { width: 50px; text-align: center; font-size: 22px; }
-        .col-name { font-weight: 500; font-size: 16px; }
-        .col-date { text-align: right; font-size: 12px; color: #999; padding-right: 20px !important; }
+        /* TIÊU ĐỀ THEO YÊU CẦU MỚI */
+        .intro-title { color: var(--accent); font-weight: bold; font-size: 16px; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; display: flex; align-items: center; }
+        .intro-title i { margin-right: 10px; }
 
-        /* VIEWER */
-        #viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; padding: 20px; box-sizing: border-box; overflow: auto; }
-        [data-theme="dark"] #viewer { background: #121212; color: #fff; }
-        .v-nav { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
-        pre { white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 14px; line-height: 1.5; }
-        .btn-close { background: #ff4757; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
-        .theme-toggle { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 100; }
+        .folder-item { display: flex; align-items: center; padding: 18px 15px; text-decoration: none; color: var(--text); border-bottom: 1px solid #f8f8f8; transition: 0.2s; }
+        .folder-item:hover { background: #f9f9f9; transform: translateX(5px); }
+        .folder-item i { color: #ffca28; font-size: 24px; margin-right: 20px; }
+        .folder-name { flex-grow: 1; font-weight: 500; font-size: 15px; }
+        .folder-date { font-size: 11px; color: #bbb; }
     </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-
-<div id="index-page">
-    <div class="profile-section">
-        <img src="https://github.com/thung65.png" class="profile-logo" alt="VMT">
-        <h1 class="profile-name">Trần Tất Khôi B</h1>
-        
-        <div class="social-links">
-            <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="social-btn btn-fb">
-                <i class="fab fa-facebook-f"></i> FACEBOOK
-            </a>
-            <a href="https://www.tiktok.com/@tranthai845" target="_blank" class="social-btn btn-tk">
-                <i class="fab fa-tiktok"></i> TIKTOK
-            </a>
-            <a href="https://github.com/thung65" target="_blank" class="social-btn btn-gh">
-                <i class="fab fa-github"></i> GITHUB
-            </a>
-            <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="social-btn btn-yt">
-                <i class="fab fa-youtube"></i> YOUTUBE
-            </a>
-        </div>
-    </div>
-
-    <div class="container">
-        <table>
-            <tbody id="list-body"></tbody>
-        </table>
+<div class="profile">
+    <img src="https://github.com/thung65.png" class="avatar" alt="Logo">
+    <div class="name">Trần Tất Khôi B</div>
+    
+    <div class="social-container">
+        <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="s-btn fb"><i class="fab fa-facebook-f"></i> FACEBOOK</a>
+        <a href="https://www.tiktok.com/@tranthai845" target="_blank" class="s-btn tk"><i class="fab fa-tiktok"></i> TIKTOK</a>
+        <a href="https://github.com/thung65" target="_blank" class="s-btn gh"><i class="fab fa-github"></i> GITHUB</a>
+        <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="s-btn yt"><i class="fab fa-youtube"></i> YOUTUBE</a>
     </div>
 </div>
 
-<div id="viewer">
-    <div class="v-nav">
-        <span id="v-title" style="font-weight: bold; opacity: 0.6;"></span>
-        <button class="btn-close" onclick="closeViewer()">ĐÓNG</button>
+<div class="folder-list">
+    <div class="intro-title">
+        <i class="fas fa-user-circle"></i> Giới thiệu - Trần Tất Khôi
     </div>
-    <img id="v-img" style="max-width: 100%; display: none; margin: auto; border-radius: 8px;">
-    <pre id="v-content"></pre>
+    
+    <a href="truyenhinhiptv.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">truyenhinhiptv</span>
+        <span class="folder-date">2026-04-05</span>
+    </a>
+
+    <a href="iptv-vietnam.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">iptv-vietnam</span>
+        <span class="folder-date">2026-04-05</span>
+    </a>
+
+    <a href="my-iptv.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">my-iptv</span>
+        <span class="folder-date">2026-04-05</span>
+    </a>
+
+    <a href="termux.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">termux</span>
+        <span class="folder-date">2026-03-28</span>
+    </a>
+
+    <a href="sidebar-player.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">Sidebar-Player</span>
+        <span class="folder-date">2026-02-24</span>
+    </a>
+
+    <a href="fpttv.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">plugin.video.fpttv</span>
+        <span class="folder-date">2026-01-14</span>
+    </a>
+
+    <a href="tvvn.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">plugin.video.tvvn</span>
+        <span class="folder-date">2026-01-05</span>
+    </a>
+
+    <a href="listtivi.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">ListTivi</span>
+        <span class="folder-date">2025-11-16</span>
+    </a>
+
+    <a href="entertainment.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">Entertainment</span>
+        <span class="folder-date">2025-10-11</span>
+    </a>
+
+    <a href="vietngatv.html" class="folder-item">
+        <i class="fas fa-folder"></i>
+        <span class="folder-name">vietngatv</span>
+        <span class="folder-date">2025-09-27</span>
+    </a>
 </div>
 
-<script>
-    const USER = 'thung65';
-    let isRoot = true;
-
-    function toggleTheme() {
-        const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-    }
-    if(localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-
-    async function loadRepos() {
-        isRoot = true;
-        const r = await fetch(`https://api.github.com/users/${USER}/repos?sort=updated`);
-        render(await r.json(), 'repo');
-    }
-
-    async function loadFiles(name) {
-        isRoot = false;
-        const r = await fetch(`https://api.github.com/repos/${USER}/${name}/contents/`);
-        render(await r.json(), 'file');
-    }
-
-    function render(data, type) {
-        const body = document.getElementById('list-body');
-        body.innerHTML = '';
-
-        // Hàng Ba chấm trống tên
-        const back = document.createElement('tr');
-        back.className = 'file-item';
-        back.innerHTML = `<td class="dot-col">⋯</td><td colspan="2"></td>`;
-        back.onclick = () => { if(!isRoot) loadRepos(); };
-        body.appendChild(back);
-
-        // Sắp xếp ưu tiên: "All" lên đầu, "International" xuống cuối
-        data.sort((a, b) => {
-            const nA = a.name.toLowerCase();
-            if(nA.includes('all')) return -1;
-            if(nA.includes('international')) return 1;
-            return 0;
-        });
-
-        data.forEach(item => {
-            if(['index.html', '_redirects'].includes(item.name)) return;
-            const tr = document.createElement('tr');
-            tr.className = 'file-item';
-
-            let icon = '📄';
-            const ext = item.name.split('.').pop().toLowerCase();
-            if (type === 'repo' || item.type === 'dir') icon = '📁';
-            else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) icon = '🖼️';
-
-            let date = item.updated_at ? new Date(item.updated_at).toISOString().split('T')[0] : "2026-04-05";
-
-            tr.innerHTML = `
-                <td class="col-icon">${icon}</td>
-                <td class="col-name">${item.name}</td>
-                <td class="col-date">${date}</td>
-            `;
-            tr.onclick = () => (type === 'repo') ? loadFiles(item.name) : openFile(item.download_url, item.name);
-            body.appendChild(tr);
-        });
-    }
-
-    async function openFile(url, name) {
-        document.getElementById('index-page').style.display = 'none';
-        document.getElementById('viewer').style.display = 'block';
-        document.getElementById('v-title').innerText = name;
-        const ext = name.split('.').pop().toLowerCase();
-        if(['jpg','png','jpeg','webp','gif'].includes(ext)) {
-            document.getElementById('v-img').src = url;
-            document.getElementById('v-img').style.display = 'block';
-            document.getElementById('v-content').style.display = 'none';
-        } else {
-            const res = await fetch(url);
-            document.getElementById('v-content').innerText = await res.text();
-            document.getElementById('v-content').style.display = 'block';
-            document.getElementById('v-img').style.display = 'none';
-        }
-    }
-
-    function closeViewer() {
-        document.getElementById('viewer').style.display = 'none';
-        document.getElementById('index-page').style.display = 'block';
-    }
-
-    loadRepos();
-</script>
 </body>
 </html>
