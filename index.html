@@ -21,9 +21,14 @@
     /* ... các dòng khác giữ nguyên ... */
 }
 
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.3s; }
-        .container { max-width: 1000px; margin: auto; background: var(--card); border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); overflow: hidden; min-height: 90vh; display: flex; flex-direction: column; }
-        
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    background: var(--bg); 
+    color: var(--text); /* Dòng này giúp chữ toàn trang tự đổi màu */
+    transition: 0.3s; 
+}
+        body {font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); /* Dòng này giúp chữ toàn trang tự đổi màu *transition: 0.3s;}
+
         .nav { background: var(--nav); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .theme-btn { cursor: pointer; background: rgba(255,255,255,0.2); border: none; padding: 5px 12px; border-radius: 20px; color: white; }
 
@@ -40,21 +45,10 @@
         /* KHU VỰC HIỂN THỊ FULL */
         #viewer { display: none; flex-grow: 1; padding: 10px; background: var(--card); border-top: 4px solid var(--nav); }
         .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        
-        #file-content { 
-            white-space: pre-wrap; 
-            background: #000; 
-            color: #4caf50; 
-            padding: 15px; 
-            border-radius: 8px; 
-            overflow: auto; 
-            font-family: 'Consolas', monospace; 
-            font-size: 13px;
-            width: calc(100% - 30px); /* Full chiều ngang */
-            height: 70vh; /* Tăng chiều cao lên 70% màn hình */
-        }
 
-        #img-view { 
+        #file-content { white-space: pre-wrap; background: var(--view-bg);*/color: var(--text); */padding: 20px; border-radius: 8px; overflow: auto; font-family: 'Consolas', monospace; font-size: 14px;line-height: 1.6;width: calc(100% - 40px);height: 75vh;border: 1px solid var(--border);}
+
+                #img-view { 
             width: 100%; /* Full chiều ngang container */
             max-width: 100%;
             height: auto; 
@@ -72,7 +66,8 @@
 
 <div class="container">
     <div class="nav">
-        <span id="status-text" style="font-weight: bold;">📂 QUẢN LÝ IPTV</span>
+
+<span id="status-text" style="font-weight: bold;">📂 QUẢN LÝ IPTV</span>
         <button class="theme-btn" onclick="toggleTheme()">🌓</button>
     </div>
     
