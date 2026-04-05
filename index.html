@@ -3,118 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV File Browser</title>
+    <title>IPTV File Explorer - thung65</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; margin: 0; padding: 15px; }
-        .container { max-width: 900px; margin: auto; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
-        .nav-bar { background: #1a73e8; color: white; padding: 15px; display: flex; align-items: center; }
-        .nav-bar a { color: white; text-decoration: none; font-weight: bold; margin-right: 10px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6f9; margin: 0; padding: 15px; }
+        .container { max-width: 1000px; margin: auto; background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .nav { background: #1a73e8; color: white; padding: 15px; display: flex; align-items: center; gap: 10px; }
+        .nav a { color: white; text-decoration: none; font-weight: bold; cursor: pointer; }
         
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; background: #f1f3f4; font-size: 13px; color: #5f6368; border-bottom: 2px solid #ddd; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 15px; }
-        tr:hover { background: #fdfdfd; }
-
-        .item-link { text-decoration: none; color: #1a73e8; font-weight: 500; display: flex; align-items: center; }
-        .item-link:hover { text-decoration: underline; }
-        .size-tag { background: #e8f0fe; color: #1967d2; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+        th { text-align: left; padding: 12px; background: #f8f9fa; border-bottom: 2px solid #eee; color: #5f6368; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
         
-        /* Sắp xếp All và International */
-        .all-item { background: #fffde7 !important; }
-        .intl-item { background: #f1f8e9 !important; }
+        .item-btn { color: #1a73e8; font-weight: 500; cursor: pointer; text-decoration: none; border: none; background: none; padding: 0; font-size: 15px; }
+        .item-btn:hover { text-decoration: underline; }
+        
+        /* Khu vực hiển thị nội dung file */
+        #viewer-container { display: none; padding: 20px; background: #282c34; color: #abb2bf; border-radius: 0 0 12px 12px; position: relative; }
+        pre { white-space: pre-wrap; word-wrap: break-word; margin: 0; font-family: monospace; font-size: 13px; max-height: 500px; overflow-y: auto; }
+        .close-btn { position: absolute; top: 10px; right: 10px; background: #e06c75; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        
+        .badge { background: #e8f0fe; color: #1967d2; padding: 3px 8px; border-radius: 10px; font-size: 12px; }
+        .special-all { background: #fff9c4 !important; }
+        .special-intl { background: #e8f5e9 !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="nav-bar" id="nav-bar">
-        <a href="?">🏠 Trang chủ</a> <span id="path-name"></span>
+    <div class="nav">
+        <a onclick="showRepos()">🏠 Trang chủ</a> <span id="current-path">/ Danh sách nhóm</span>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th id="col-name">Tên Nhóm / Tệp</th>
-                <th>Dung lượng</th>
-                <th>Cập nhật</th>
-            </tr>
-        </thead>
-        <tbody id="content-list">
-            <tr><td colspan="3">Đang truy xuất dữ liệu...</td></tr>
-        </tbody>
-    </table>
+    
+    <div id="table-area">
+        <table>
+            <thead>
+                <tr id="table-header">
+                    <th>Tên Nhóm / Tệp</th>
+                    <th>Dung lượng</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="list-body">
+                </tbody>
+        </table>
+    </div>
+
+    <div id="viewer-container">
+        <button class="close-btn" onclick="closeViewer()">Đóng</button>
+        <h4 id="viewing-file-name" style="color: #61afef; margin-top: 0;"></h4>
+        <pre id="file-content">Đang tải nội dung...</pre>
+    </div>
 </div>
 
 <script>
-    const GITHUB_USER = 'thung65';
-    const params = new URLSearchParams(window.location.search);
-    const currentRepo = params.get('repo');
-    const listBody = document.getElementById('content-list');
+    const USER = 'thung65';
+    const listBody = document.getElementById('list-body');
+    const pathText = document.getElementById('current-path');
 
-    // Hàm đổi byte sang size
-    function formatSize(s) {
-        if (!s) return '--';
-        if (s < 1024) return s + ' B';
-        return (s / 1024).toFixed(1) + ' KB';
+    // 1. Hiển thị tất cả các Nhóm (Repository)
+    async function showRepos() {
+        closeViewer();
+        pathText.innerText = '/ Tất cả nhóm';
+        const res = await fetch(`https://api.github.com/users/${USER}/repos?sort=updated`);
+        const repos = await res.json();
+        renderList(repos, 'repo');
     }
 
-    // Hàm sắp xếp All lên đầu, International xuống cuối
-    function sortItems(arr) {
-        return arr.sort((a, b) => {
-            const nA = (a.name || a.title).toLowerCase();
-            const nB = (b.name || b.title).toLowerCase();
+    // 2. Hiển thị File trong Nhóm
+    async function showFiles(repoName) {
+        closeViewer();
+        pathText.innerText = `/ ${repoName}`;
+        const res = await fetch(`https://api.github.com/repos/${USER}/${repoName}/contents/`);
+        const files = await res.json();
+        renderList(files, 'file', repoName);
+    }
+
+    // 3. Đọc và hiện nội dung file (Không chuyển sang raw)
+    async function viewFile(url, fileName) {
+        const viewer = document.getElementById('viewer-container');
+        const contentBox = document.getElementById('file-content');
+        const nameBox = document.getElementById('viewing-file-name');
+        
+        viewer.style.display = 'block';
+        nameBox.innerText = `Nội dung: ${fileName}`;
+        contentBox.innerText = 'Đang truy xuất dữ liệu từ server...';
+
+        try {
+            const res = await fetch(url);
+            const text = await res.text();
+            contentBox.innerText = text;
+            viewer.scrollIntoView({ behavior: 'smooth' });
+        } catch (e) {
+            contentBox.innerText = 'Lỗi: Không thể đọc file này.';
+        }
+    }
+
+    function renderList(items, type, repoName = '') {
+        listBody.innerHTML = '';
+        
+        // Sắp xếp All lên đầu, International xuống cuối
+        items.sort((a, b) => {
+            const nA = a.name.toLowerCase();
+            const nB = b.name.toLowerCase();
             if (nA.includes('all')) return -1;
             if (nB.includes('all')) return 1;
             if (nA.includes('international')) return 1;
             if (nB.includes('international')) return -1;
             return 0;
         });
+
+        items.forEach(item => {
+            if (item.name === 'index.html' || item.name === '_redirects') return;
+
+            const tr = document.createElement('tr');
+            if (item.name.toLowerCase().includes('all')) tr.className = 'special-all';
+            if (item.name.toLowerCase().includes('international')) tr.className = 'special-intl';
+
+            const size = item.size ? (item.size / 1024).toFixed(1) + ' KB' : '--';
+            
+            let actionHtml = '';
+            if (type === 'repo') {
+                actionHtml = `<button class="item-btn" onclick="showFiles('${item.name}')">📁 Mở nhóm</button>`;
+            } else {
+                actionHtml = `<button class="item-btn" onclick="viewFile('${item.download_url}', '${item.name}')">👁️ Xem nội dung</button>`;
+            }
+
+            tr.innerHTML = `
+                <td><b>${item.name}</b></td>
+                <td><span class="badge">${size}</span></td>
+                <td>${actionHtml}</td>
+            `;
+            listBody.appendChild(tr);
+        });
     }
 
-    async function init() {
-        if (!currentRepo) {
-            // HIỆN DANH SÁCH CÁC NHÓM
-            document.getElementById('path-name').innerText = '/ Tất cả nhóm';
-            const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated`);
-            let repos = await res.json();
-            listBody.innerHTML = '';
-
-            sortItems(repos).forEach(repo => {
-                const tr = document.createElement('tr');
-                if(repo.name.toLowerCase().includes('all')) tr.className = 'all-item';
-                if(repo.name.toLowerCase().includes('international')) tr.className = 'intl-item';
-
-                tr.innerHTML = `
-                    <td><a class="item-link" href="?repo=${repo.name}">📁 ${repo.name}</a></td>
-                    <td><span class="badge">${repo.size} KB</span></td>
-                    <td>${new Date(repo.updated_at).toLocaleDateString()}</td>
-                `;
-                listBody.appendChild(tr);
-            });
-        } else {
-            // HIỆN FILE TRONG MỘT NHÓM CỤ THỂ
-            document.getElementById('path-name').innerText = `/ ${currentRepo}`;
-            document.getElementById('col-name').innerText = 'Tên Tệp';
-            const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${currentRepo}/contents/`);
-            let files = await res.json();
-            listBody.innerHTML = '';
-
-            sortItems(files).forEach(file => {
-                if(file.name === 'index.html' || file.name === '_redirects') return;
-                const tr = document.createElement('tr');
-                if(file.name.toLowerCase().includes('all')) tr.className = 'all-item';
-                if(file.name.toLowerCase().includes('international')) tr.className = 'intl-item';
-
-                tr.innerHTML = `
-                    <td><a class="item-link" href="${file.download_url}">📄 ${file.name}</a></td>
-                    <td><span class="size-tag">${formatSize(file.size)}</span></td>
-                    <td>Vừa truy xuất</td>
-                `;
-                listBody.appendChild(tr);
-            });
-        }
+    function closeViewer() {
+        document.getElementById('viewer-container').style.display = 'none';
     }
 
-    init();
+    // Khởi tạo
+    showRepos();
 </script>
 
 </body>
