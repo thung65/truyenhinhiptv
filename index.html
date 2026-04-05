@@ -3,78 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Premium Explorer</title>
+    <title>IPTV Explorer - Pro View</title>
     <style>
         :root {
             --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --text: #2d3436;
-            --border: #edf2f7;
-            --hover: #f8fafc;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --view-bg: #ffffff;
+            --bg: #f0f2f5; --card: #ffffff; --text: #2d3436;
+            --border: #edf2f7; --hover: #f8fafc; --view-bg: #ffffff;
         }
         [data-theme="dark"] {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --text: #f1f5f9;
-            --border: #334155;
-            --hover: #33415566;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
-            --view-bg: #000000;
+            --bg: #0f172a; --card: #1e293b; --text: #f1f5f9;
+            --border: #334155; --hover: #33415566; --view-bg: #000000;
         }
 
-        body { font-family: 'Inter', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: all 0.3s ease; }
-        
-        .container { 
-            max-width: 900px; margin: auto; background: var(--card); border-radius: 20px; 
-            box-shadow: var(--shadow); overflow: hidden; min-height: 90vh; display: flex; flex-direction: column;
-            border: 1px solid var(--border);
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.3s; }
+        .container { max-width: 900px; margin: auto; background: var(--card); border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; min-height: 92vh; display: flex; flex-direction: column; }
         
         /* HEADER */
-        .header { 
-            background: var(--primary); padding: 20px; color: white; 
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .header h2 { margin: 0; font-size: 18px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        
-        .theme-toggle { 
-            cursor: pointer; background: rgba(255,255,255,0.2); border: none; 
-            width: 40px; height: 40px; border-radius: 12px; color: white; font-size: 18px;
-            backdrop-filter: blur(5px); transition: 0.2s;
-        }
-        .theme-toggle:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
+        .header { background: var(--primary); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .theme-toggle { cursor: pointer; background: rgba(255,255,255,0.2); border: none; width: 35px; height: 35px; border-radius: 10px; color: white; }
 
-        /* LIST AREA */
+        /* TABLE */
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 16px; border-bottom: 1px solid var(--border); transition: 0.2s; }
-        tr:last-child td { border-bottom: none; }
+        td { padding: 16px; border-bottom: 1px solid var(--border); cursor: pointer; }
         tr:hover td { background: var(--hover); }
 
-        .back-btn-row { background: var(--hover); cursor: pointer; }
-        .back-btn-row td { text-align: center; font-size: 24px; color: #6366f1; padding: 10px; }
+        .back-row { background: var(--hover); text-align: center; font-size: 22px; color: #6366f1; font-weight: bold; }
 
-        .item-row { cursor: pointer; display: flex; align-items: center; gap: 12px; }
-        .icon { font-size: 20px; }
-        .file-name { font-weight: 600; font-size: 15px; }
-        .file-info { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+        /* VIEWER & CLOSE BUTTON */
+        #viewer { display: none; flex-grow: 1; padding: 15px; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* VIEWER - FULL SCREEN STYLE */
-        #viewer { display: none; flex-grow: 1; padding: 15px; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .exit-btn { 
+            background: #ff4757; color: white; border: none; padding: 6px 15px; 
+            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .exit-btn:hover { background: #ff6b81; }
 
         #file-content { 
-            background: var(--view-bg); color: var(--text); padding: 20px; 
-            border-radius: 15px; overflow: auto; font-family: 'Fira Code', monospace; 
-            font-size: 14px; line-height: 1.6; height: 65vh; border: 1px solid var(--border);
-            box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.05);
+            background: var(--view-bg); color: var(--text); padding: 15px; 
+            border-radius: 12px; overflow: auto; font-family: monospace; 
+            font-size: 14px; line-height: 1.5; height: 70vh; border: 1px solid var(--border);
         }
+        #img-view { width: 100%; border-radius: 12px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-        #img-view { width: 100%; border-radius: 15px; display: none; box-shadow: var(--shadow); }
-
-        /* PHÂN LOẠI */
         .row-all { border-left: 5px solid #fbbf24; }
         .row-intl { border-left: 5px solid #10b981; }
     </style>
@@ -83,7 +56,7 @@
 
 <div class="container">
     <div class="header">
-        <h2 id="status-text">🚀 IPTV EXPLORER</h2>
+        <span id="status-text" style="font-weight: bold; font-size: 15px;">🚀 IPTV EXPLORER</span>
         <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     </div>
     
@@ -94,9 +67,9 @@
     </div>
 
     <div id="viewer">
-        <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-            <span style="background:#6366f1; color:white; padding:4px 12px; border-radius:8px; font-size:12px; font-weight:bold;">PREVIEW</span>
-            <span id="view-title" style="font-weight: 600; opacity: 0.8;"></span>
+        <div class="view-controls">
+            <span id="view-title" style="font-weight: 600; font-size: 14px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;"></span>
+            <button class="exit-btn" onclick="closeViewer()">✕ THOÁT</button>
         </div>
         <img id="img-view" src="">
         <pre id="file-content"></pre>
@@ -106,6 +79,7 @@
 <script>
     const USER = 'thung65';
     let viewMode = 'repos';
+    let currentRepo = '';
 
     function toggleTheme() {
         const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -118,16 +92,17 @@
         viewMode = 'repos';
         document.getElementById('list-area').style.display = 'block';
         document.getElementById('viewer').style.display = 'none';
-        document.getElementById('status-text').innerHTML = '📂 DANH SÁCH NHÓM';
+        document.getElementById('status-text').innerText = '📂 TẤT CẢ NHÓM';
         const res = await fetch(`https://api.github.com/users/${USER}/repos?sort=updated`);
         render(await res.json(), 'repo');
     }
 
     async function loadFiles(repoName) {
         viewMode = 'files';
+        currentRepo = repoName;
         document.getElementById('list-area').style.display = 'block';
         document.getElementById('viewer').style.display = 'none';
-        document.getElementById('status-text').innerHTML = `📁 ${repoName.toUpperCase()}`;
+        document.getElementById('status-text').innerText = `📁 ${repoName.toUpperCase()}`;
         const res = await fetch(`https://api.github.com/repos/${USER}/${repoName}/contents/`);
         render(await res.json(), 'file');
     }
@@ -150,15 +125,20 @@
         }
     }
 
+    function closeViewer() {
+        // Khi bấm nút thoát, hiện lại danh sách file của repo hiện tại
+        document.getElementById('viewer').style.display = 'none';
+        document.getElementById('list-area').style.display = 'block';
+    }
+
     function render(items, type) {
         const body = document.getElementById('list-body');
         body.innerHTML = '';
         
-        // NÚT BA CHẤM (BACK)
         const backRow = document.createElement('tr');
-        backRow.className = 'back-btn-row';
+        backRow.className = 'back-row';
         backRow.innerHTML = `<td colspan="2">⋯</td>`;
-        backRow.onclick = () => { if(viewMode === 'files') loadRepos(); else document.getElementById('viewer').style.display = 'none'; };
+        backRow.onclick = () => { if(viewMode === 'files') loadRepos(); };
         body.appendChild(backRow);
 
         items.sort((a, b) => {
@@ -174,20 +154,12 @@
             if(item.name.toLowerCase().includes('all')) tr.className = 'row-all';
             if(item.name.toLowerCase().includes('international')) tr.className = 'row-intl';
             
-            const icon = type === 'repo' ? '📁' : '📄';
-            const subInfo = type === 'repo' ? 'Repository' : `${(item.size/1024).toFixed(1)} KB`;
-
             tr.innerHTML = `
                 <td>
-                    <div class="item-row">
-                        <span class="icon">${icon}</span>
-                        <div>
-                            <div class="file-name">${item.name}</div>
-                            <div class="file-info">${subInfo}</div>
-                        </div>
-                    </div>
+                    <div style="font-weight: 600;">${type === 'repo' ? '📁' : '📄'} ${item.name}</div>
+                    <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">${type === 'repo' ? 'Repository' : (item.size/1024).toFixed(1) + ' KB'}</div>
                 </td>
-                <td style="text-align: right; color: #94a3b8;">❯</td>
+                <td style="text-align: right; color: #ccc;">❯</td>
             `;
             tr.onclick = () => { if(type === 'repo') loadFiles(item.name); else openContent(item.download_url, item.name); };
             body.appendChild(tr);
