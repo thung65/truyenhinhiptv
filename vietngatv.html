@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index of /mytv/ - Trần Tất Khôi B</title>
+    <title>Index of /Iptv-vietnam/ - Trần Tất Khôi B</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 40px 20px; color: #333; }
@@ -13,8 +13,8 @@
         th { text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; color: #0066cc; }
         td { padding: 12px; border-bottom: 1px solid #dee2e6; font-size: 14px; }
         tr:hover { background: #f8f9fa; }
-        a { text-decoration: none; color: #0066cc; font-weight: 500; }
-        .icon { width: 25px; color: #777; }
+        .file-item { display: flex; align-items: center; cursor: pointer; width: 100%; }
+        .icon { width: 25px; color: #777; margin-right: 10px; }
         .footer { margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid #dee2e6; padding-top: 15px; }
     </style>
 </head>
@@ -26,11 +26,11 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Type</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody id="file-table">
-            <tr><td><i class="fas fa-spinner fa-spin icon"></i> Đang tải danh sách file...</td><td>-</td></tr>
+            <tr><td colspan="2"><i class="fas fa-spinner fa-spin icon"></i> Đang tải danh sách file từ thung65...</td></tr>
         </tbody>
     </table>
     <div class="footer">
@@ -39,30 +39,36 @@
 </div>
 
 <script>
-    const USER = 'thung65';
-    // QUAN TRỌNG: Sửa tên REPO đúng với tên thư mục trên GitHub của bạn
-    const REPO = 'Iptv-vietnam'; 
-
+    // BỎ SẠCH CONST - TRỎ THẲNG REPO Iptv-vietnam
     async function loadFiles() {
         try {
-            const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/`);
+            // Nhúng thẳng user và repo vào link fetch
+            const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
             const data = await res.json();
-            const list = document.getElementById('file-list');
+            
+            // Sửa lỗi ID: Phải khớp với id="file-table" ở trên
+            const list = document.getElementById('file-table');
             
             list.innerHTML = data.map(file => {
-    if(file.name === 'index.html') return '';
-    
-    // Thay vì dùng thẻ <a>, ta dùng thẻ <div> và thêm onclick để mở tại chỗ
-    return `
-        <div class="file-item" onclick="openFile('${file.download_url}', '${file.name}')">
-            <i class="fas fa-file-code" style="color:#576574"></i>
-            <span style="flex-grow:1; font-size: 14px;">${file.name}</span>
-            <i class="fas fa-eye" style="font-size:12px; color:#ccc"></i>
-        </div>
-    `;
-}).join('');
-        } catch (e) { console.error("Lỗi tải file"); }
+                if(file.name === 'index.html' || file.type === 'dir') return '';
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="file-item" onclick="window.open('${file.download_url}', '_blank')">
+                                <i class="fas fa-file-code icon" style="color:#576574"></i>
+                                <span style="color:#0066cc; font-weight:500;">${file.name}</span>
+                            </div>
+                        </td>
+                        <td><i class="fas fa-eye" style="font-size:12px; color:#ccc"></i> View Raw</td>
+                    </tr>
+                `;
+            }).join('');
+        } catch (e) { 
+            document.getElementById('file-table').innerHTML = "<tr><td colspan='2'>Lỗi: Không thể tải danh sách!</td></tr>";
+        }
     }
+    
     loadFiles();
 </script>
 </body>
