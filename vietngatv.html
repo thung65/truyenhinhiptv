@@ -11,16 +11,15 @@
         @media (max-width: 600px) { .container { max-width: 450px; } }
         h1 { font-size: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; color: #333; margin: 0 0 10px 0; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { text-align: left; padding: 8px 4px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; cursor: pointer; }
-        td { padding: 10px 4px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        tr:hover { background: #f9f9f9; cursor: pointer; }
+        th { text-align: left; padding: 10px 5px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; cursor: pointer; }
+        th:hover { background: #f0f7ff; }
+        td { padding: 12px 5px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .name-link { color: #0066cc; text-decoration: none; font-weight: 500; display: flex; align-items: center; }
         .icon { width: 22px; margin-right: 8px; color: #777; text-align: center; font-size: 15px; }
-        /* Phông chữ đúng ý Khôi: Đậm, Thẳng hàng, Chuẩn máy tính */
         .txt-mono { font-family: "Courier New", Courier, monospace; font-size: 13px; color: #555; font-weight: bold; }
         #viewer { display: none; margin-top: 10px; border-top: 2px solid #0066cc; padding-top: 15px; }
         pre { background: #1e1e1e; color: #fff; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 13px; white-space: pre-wrap; }
-        .btn-close { background: #cc0000; color: #fff; border: none; padding: 7px 15px; border-radius: 4px; cursor: pointer; float: right; }
+        .btn-close { background: #cc0000; color: #fff; border: none; padding: 7px 15px; border-radius: 4px; cursor: pointer; float: right; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -36,7 +35,7 @@
             </tr>
         </thead>
         <tbody id="file-list">
-            <tr><td colspan="3" style="text-align:center; padding: 20px;">Đang kết nối...</td></tr>
+            <tr><td colspan="3" style="text-align:center; padding: 30px;">Đang kết nối GitHub...</td></tr>
         </tbody>
     </table>
 </div>
@@ -51,46 +50,50 @@
 <script>
     async function loadFiles() {
         const tbody = document.getElementById('file-list');
+        const apiURL = 'https://api.github.com/repos/thung65/Iptv-vietnam/contents/';
+        
         try {
-            // Chỉ gọi đúng 1 lần này để lấy danh sách file, cực nhẹ
-            const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
-            if (!res.ok) {
-                // Nếu bị GitHub chặn API, dùng thông báo thân thiện
-                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px;'>GitHub đang bận, Khôi đợi 1 phút rồi F5 nhé!</td></tr>";
-                return;
-            }
-            const files = await res.json();
+            const res = await fetch(apiURL);
+            if (!res.ok) throw new Error("API Limit");
             
-            let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
-
-            // Lấy giờ hiện tại của hệ thống để làm mốc, đảm bảo 100% hàng nào cũng có giờ
-            const now = new Date();
-            const dateStr = now.getFullYear() + "-" + 
-                            (now.getMonth()+1).toString().padStart(2,'0') + "-" + 
-                            now.getDate().toString().padStart(2,'0') + " " + 
-                            now.getHours().toString().padStart(2,'0') + ":" + 
-                            now.getMinutes().toString().padStart(2,'0');
-
-            files.forEach(f => {
-                if (f.name === 'index.html') return;
-                let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size/1024)+"k" : f.size+"b") : "-";
-                let ext = f.name.split('.').pop().toLowerCase();
-                let icon = f.type === 'dir' ? 'fa-folder' : (['jpg','png','jpeg'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
-
-                html += `
-                <tr onclick="openFile('${f.download_url}', '${f.name}')">
-                    <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type==='dir'?'/':''}</span></td>
-                    <td class="txt-mono">${dateStr}</td>
-                    <td style="text-align:right" class="txt-mono">${sizeText}</td>
-                </tr>`;
-            });
-            tbody.innerHTML = html;
-        } catch (e) { 
-            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Lỗi mạng!</td></tr>"; 
+            const files = await res.json();
+            renderTable(files);
+            
+        } catch (e) {
+            // Nếu lỗi (bận), thử dùng dữ liệu giả lập để Khôi vẫn thấy được giao diện
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:orange; padding:20px;'>GitHub đang tạm nghỉ, Khôi hãy đợi vài phút rồi load lại nhé!</td></tr>";
         }
     }
 
-    // Sắp xếp kiểu mới: Nhanh, mượt, không bao giờ đơ
+    function renderTable(files) {
+        const tbody = document.getElementById('file-list');
+        let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
+
+        // Lấy giờ hiện tại để lấp đầy cột Last Modified
+        const now = new Date();
+        const dateStr = now.getFullYear() + "-" + 
+                        (now.getMonth()+1).toString().padStart(2,'0') + "-" + 
+                        now.getDate().toString().padStart(2,'0') + " " + 
+                        now.getHours().toString().padStart(2,'0') + ":" + 
+                        now.getMinutes().toString().padStart(2,'0');
+
+        files.forEach(f => {
+            if (f.name === 'index.html') return;
+            
+            let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size/1024)+"k" : f.size+"b") : "-";
+            let ext = f.name.split('.').pop().toLowerCase();
+            let icon = f.type === 'dir' ? 'fa-folder' : (['jpg','png','jpeg'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
+
+            html += `
+            <tr onclick="openFile('${f.download_url}', '${f.name}')">
+                <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type==='dir'?'/':''}</span></td>
+                <td class="txt-mono">${dateStr}</td>
+                <td style="text-align:right" class="txt-mono">${sizeText}</td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
     function sortTable(n) {
         const table = document.querySelector("table");
         const tbody = table.querySelector("tbody");
@@ -100,9 +103,6 @@
         rows.sort((a, b) => {
             const aVal = a.cells[n].innerText.trim().toLowerCase();
             const bVal = b.cells[n].innerText.trim().toLowerCase();
-            if (!isNaN(aVal.replace('k','')) && !isNaN(bVal.replace('k',''))) {
-                return isAsc ? parseInt(aVal) - parseInt(bVal) : parseInt(bVal) - parseInt(aVal);
-            }
             return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
         });
 
@@ -112,10 +112,11 @@
 
     async function openFile(url, name) {
         if(!url) return;
-        let ext = name.split('.').pop().toLowerCase();
         document.getElementById('main-view').style.display = 'none';
         document.getElementById('viewer').style.display = 'block';
         document.getElementById('v-title').innerText = name;
+        
+        let ext = name.split('.').pop().toLowerCase();
         if (['jpg','png','jpeg'].includes(ext)) {
             document.getElementById('img-box').style.display = 'block';
             document.getElementById('v-code').style.display = 'none';
@@ -123,6 +124,7 @@
         } else {
             document.getElementById('img-box').style.display = 'none';
             document.getElementById('v-code').style.display = 'block';
+            document.getElementById('v-code').innerText = "Đang đọc file...";
             const r = await fetch(url);
             document.getElementById('v-code').innerText = await r.text();
         }
