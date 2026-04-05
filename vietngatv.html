@@ -3,50 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index of /Iptv-vietnam/ - Trần Tất Khôi B</title>
+    <title>Index of /Iptv-vietnam/</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* GIỮ PHONG CÁCH "INDEX OF" KINH ĐIỂN - MÀU TÍM Gu CỦA KHÔI */
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 20px; color: #333; margin: 0; }
-        .container { max-width: 950px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #ddd; }
-        h1 { font-size: 26px; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; color: #555; font-weight: 500; }
+        body { font-family: "Segoe UI", Segoe, Tahoma, Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 4px; border: 1px solid #ddd; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h1 { font-size: 24px; margin: 0 0 15px 0; font-weight: 500; color: #333; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; }
         
-        /* GIAO DIỆN DANH SÁCH FILE */
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; color: #0066cc; text-transform: uppercase; font-size: 13px; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
-        tr:hover { background: #f9fbff; cursor: pointer; }
-        .icon { margin-right: 10px; color: #8a2be2; font-size: 16px; } /* Màu tím Gu Khôi thích */
-
-        /* GIAO DIỆN KHUNG XEM FILE (VIEWER) */
+        th { text-align: left; padding: 10px; border-bottom: 2px solid #dee2e6; color: #0066cc; font-size: 14px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; color: #555; }
+        tr:hover { background: #f1f5fb; cursor: pointer; }
+        
+        .icon { width: 25px; color: #777; margin-right: 8px; font-size: 16px; }
+        .name-link { color: #0066cc; text-decoration: none; font-weight: 600; }
+        
+        /* Cấu trúc xem nội dung tệp */
         #viewer { display: none; margin-top: 20px; border-top: 2px solid #0066cc; }
-        .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
-        .v-title { color: #0066cc; font-weight: 600; font-size: 16px; }
-        
-        /* Chế độ xem Code/Văn bản */
-        pre { display: none; background: #282c34; color: #abb2bf; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.5; }
-        
-        /* Chế độ xem Hình ảnh */
-        #image-frame { display: none; text-align: center; background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 5px; }
-        #image-frame img { max-width: 100%; height: auto; border: 2px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        
-        .btn-close { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .footer { margin-top: 30px; font-size: 12px; color: #888; text-align: center; border-top: 1px solid #eee; padding-top: 15px; }
+        .v-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; font-size: 13px; line-height: 1.5; }
+        #img-box img { max-width: 100%; border: 1px solid #ccc; padding: 4px; background: #fff; }
+
+        .footer { margin-top: 30px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-list">
-    <h1><i class="fas fa-folder-open icon"></i> Index of /Iptv-vietnam/</h1>
+<div class="container" id="main-content">
+    <h1>Index of /Iptv-vietnam/</h1>
     <table>
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Action</th>
+                <th>Last Modified</th>
+                <th style="text-align:right">Size</th>
             </tr>
         </thead>
-        <tbody id="file-table">
-            <tr><td colspan="2"><i class="fas fa-spinner fa-spin icon"></i> Đang tải danh sách từ thung65...</td></tr>
+        <tbody id="file-list">
+            <tr><td colspan="3"><i class="fas fa-spinner fa-spin"></i> Đang tính toán dung lượng tệp từ thung65...</td></tr>
         </tbody>
     </table>
     <div class="footer">Proudly Served by Netlify Web Server at tatkhoi.id.vn Port 443</div>
@@ -54,88 +48,94 @@
 
 <div class="container" id="viewer">
     <div class="v-header">
-        <strong id="v-title" class="v-title">File nội dung</strong>
-        <button class="btn-close" onclick="closeViewer()">ĐÓNG XEM</button>
+        <strong id="v-title" style="color:#0066cc">Thông tin tệp</strong>
+        <button onclick="closeViewer()" style="background:#d9534f; color:#fff; border:none; padding:6px 12px; border-radius:3px; cursor:pointer; font-weight:bold;">ĐÓNG</button>
     </div>
-    
-    <pre id="v-content-code">Đang tải...</pre>
-    
-    <div id="image-frame">
-        <img id="v-content-img" src="" alt="Hình ảnh">
-    </div>
+    <div id="img-box" style="display:none; text-align:center;"><img id="v-img" src=""></div>
+    <pre id="v-code" style="display:none;"></pre>
 </div>
 
 <script>
-    // BỎ SẠCH CONST - Dùng link trực tiếp repo Iptv-vietnam của Khôi
     async function loadFiles() {
         try {
-            // Nhúng thẳng link fetch vào hàm
             const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
-            const data = await res.json();
+            const files = await res.json();
+            const tbody = document.getElementById('file-list');
             
-            // Tìm đúng id="file-table" của bảng
-            const table = document.getElementById('file-table');
-            
-            table.innerHTML = data.map(file => {
-                if(file.name === 'index.html' || file.type === 'dir') return '';
+            let rows = `<tr><td colspan="3"><i class="fas fa-level-up-alt icon"></i> <a href="/" class="name-link">Parent Directory</a></td></tr>`;
+
+            const filePromises = files.map(async (file) => {
+                if (file.name === 'index.html') return '';
+
+                // Lấy giờ commit chính xác từ GitHub
+                const commitRes = await fetch(`https://api.github.com/repos/thung65/Iptv-vietnam/commits?path=${file.path}&per_page=1`);
+                const commitData = await commitRes.json();
                 
-                // Nhận diện File ảnh để gán Icon phù hợp (PNG/JPG)
+                let dateDisplay = "---";
+                if (commitData.length > 0) {
+                    let d = new Date(commitData[0].commit.committer.date);
+                    dateDisplay = d.toLocaleString('vi-VN', { 
+                        year: 'numeric', month: '2-digit', day: '2-digit', 
+                        hour: '2-digit', minute: '2-digit', hour12: false 
+                    }).replace(/, /g, ' ');
+                }
+
+                // HÀM TÍNH ĐỘ NẶNG CỦA FILE (Size)
+                let sizeDisplay = "-";
+                if (file.type !== 'dir') {
+                    const s = file.size;
+                    if (s >= 1048576) {
+                        sizeDisplay = (s / 1048576).toFixed(1) + ' MB';
+                    } else {
+                        sizeDisplay = (s / 1024).toFixed(1) + ' KB';
+                    }
+                }
+
                 let ext = file.name.split('.').pop().toLowerCase();
-                let iconClass = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? 'fas fa-file-image' : 'fas fa-file-code';
-                
+                let iconClass = file.type === 'dir' ? 'fa-folder' : 'fa-file-alt';
+                if(['jpg','png','jpeg','gif'].includes(ext)) iconClass = 'fa-file-image';
+
                 return `
-                    <tr onclick="openFile('${file.download_url}', '${file.name}')">
-                        <td><i class="${iconClass} icon"></i> ${file.name}</td>
-                        <td style="text-align: right;"><i class="fas fa-eye" style="font-size:12px; color:#ccc"></i> View</td>
-                    </tr>
-                `;
-            }).join('');
-        } catch (e) { 
-            document.getElementById('file-table').innerHTML = "<tr><td colspan='2'>Lỗi: Không thể kết nối!</td></tr>";
+                <tr onclick="openFile('${file.download_url}', '${file.name}')">
+                    <td>
+                        <i class="fas ${iconClass} icon"></i>
+                        <span class="name-link">${file.name}${file.type === 'dir' ? '/' : ''}</span>
+                    </td>
+                    <td>${dateDisplay}</td>
+                    <td style="text-align:right; font-family: monospace;">${sizeDisplay}</td>
+                </tr>`;
+            });
+
+            const results = await Promise.all(filePromises);
+            tbody.innerHTML = rows + results.join('');
+
+        } catch (e) {
+            document.getElementById('file-list').innerHTML = "<tr><td colspan='3'>Lỗi tải danh sách tệp!</td></tr>";
         }
     }
 
-    // HÀM XỬ LÝ MỞ FILE THÔNG MINH (TỰ NHẬN DIỆN ẢNH HOẶC CODE)
     async function openFile(url, name) {
-        document.getElementById('main-list').style.display = 'none';
-        document.getElementById('viewer').style.display = 'block';
-        document.getElementById('v-title').innerText = "Đang xem: " + name;
-
-        // Reset trạng thái xem
-        document.getElementById('v-content-code').style.display = 'none';
-        document.getElementById('image-frame').style.display = 'none';
-
-        // Lấy đuôi file để nhận diện loại
         let ext = name.split('.').pop().toLowerCase();
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('viewer').style.display = 'block';
+        document.getElementById('v-title').innerText = name;
 
-        // 1. Nếu là FILE ẢNH (png, jpg, jpeg)
-        if (ext === 'png' || ext === 'jpg' || ext === 'jpeg') {
-            document.getElementById('image-frame').style.display = 'block';
-            document.getElementById('v-content-img').src = url;
-            document.getElementById('v-title').innerText += " (Chế độ xem Hình ảnh)";
-        
-        // 2. Nếu là FILE VĂN BẢN/CODE (php, m3u, js...)
+        if (['jpg','png','jpeg','gif'].includes(ext)) {
+            document.getElementById('img-box').style.display = 'block';
+            document.getElementById('v-code').style.display = 'none';
+            document.getElementById('v-img').src = url;
         } else {
-            document.getElementById('v-content-code').style.display = 'block';
-            document.getElementById('v-content-code').innerText = "Vui lòng đợi, đang đọc dữ liệu file...";
-            try {
-                const res = await fetch(url);
-                const text = await res.text();
-                document.getElementById('v-content-code').innerText = text;
-                document.getElementById('v-title').innerText += " (Chế độ xem Code)";
-            } catch (e) {
-                document.getElementById('v-content-code').innerText = "Lỗi: Không thể hiển thị nội dung file này!";
-            }
+            document.getElementById('img-box').style.display = 'none';
+            document.getElementById('v-code').style.display = 'block';
+            document.getElementById('v-code').innerText = "Đang đọc dữ liệu...";
+            const res = await fetch(url);
+            document.getElementById('v-code').innerText = await res.text();
         }
     }
 
-    // Hàm quay lại danh sách chính
     function closeViewer() {
-        // Reset ảnh để lần sau mở ảnh khác không bị lag ảnh cũ
-        document.getElementById('v-content-img').src = "";
-        
         document.getElementById('viewer').style.display = 'none';
-        document.getElementById('main-list').style.display = 'block';
+        document.getElementById('main-content').style.display = 'block';
     }
 
     loadFiles();
