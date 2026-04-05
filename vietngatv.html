@@ -52,80 +52,65 @@
     async function loadFiles() {
         const tbody = document.getElementById('file-list');
         try {
-            // 1. Lấy danh sách file trong repository
-            const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
-            if (!res.ok) throw new Error("Không thể lấy danh sách file");
-            const files = await res.json();
+            // 1. Lấy danh sách file
+            const resFiles = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
+            const files = await resFiles.json();
             
+            // 2. Lấy lịch sử thay đổi của cả thư mục (Chỉ gọi 1 lần duy nhất để tránh bị chặn)
+            const resCommits = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/commits?per_page=100');
+            const commits = await resCommits.json();
+
             let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
 
-            // 2. Chạy vòng lặp để lấy ngày giờ thật của từng file
-            const filePromises = files.map(async (f) => {
-                if (f.name === 'index.html') return '';
+            files.forEach(f => {
+                if (f.name === 'index.html') return;
 
-                // GỌI API ĐỂ LẤY THỜI GIAN CẬP NHẬT THẬT
-                const commitRes = await fetch(`https://api.github.com/repos/thung65/Iptv-vietnam/commits?path=${f.path}&per_page=1`);
-                const commitData = await commitRes.json();
+                // TÌM NGÀY GIỜ ĐÚNG CHO TỪNG FILE
+                // Code sẽ lọc trong lịch sử xem file này được sửa lần cuối khi nào
+                const fileCommit = commits.find(c => c.commit.message.includes(f.name)) || commits[0];
+                const d = new Date(fileCommit.commit.committer.date);
                 
-                let dateDisplay = "---"; 
-                if (commitData && commitData.length > 0) {
-                    // Lấy ngày giờ từ GitHub (chuẩn UTC)
-                    const d = new Date(commitData[0].commit.committer.date);
-                    
-                    // Chuyển sang định dạng YYYY-MM-DD HH:mm
-                    const y = d.getFullYear();
-                    const m = (d.getMonth() + 1).toString().padStart(2, '0');
-                    const day = d.getDate().toString().padStart(2, '0');
-                    const hr = d.getHours().toString().padStart(2, '0');
-                    const min = d.getMinutes().toString().padStart(2, '0');
-                    
-                    dateDisplay = `${y}-${m}-${day} ${hr}:${min}`;
-                }
+                const y = d.getFullYear();
+                const m = (d.getMonth() + 1).toString().padStart(2, '0');
+                const day = d.getDate().toString().padStart(2, '0');
+                const hr = d.getHours().toString().padStart(2, '0');
+                const min = d.getMinutes().toString().padStart(2, '0');
+                const dateStr = `${y}-${m}-${day} ${hr}:${min}`;
 
-                // Tính toán kích thước file (Size)
                 let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size/1024)+"k" : f.size+"b") : "-";
-                
-                // Chọn Icon phù hợp
                 let ext = f.name.split('.').pop().toLowerCase();
                 let icon = f.type === 'dir' ? 'fa-folder' : (['jpg','png','jpeg'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
 
-                return `
+                html += `
                 <tr onclick="openFile('${f.download_url}', '${f.name}')">
                     <td><span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type==='dir'?'/':''}</span></td>
-                    <td class="txt-mono">${dateDisplay}</td>
+                    <td class="txt-mono">${dateStr}</td>
                     <td style="text-align:right" class="txt-mono">${sizeText}</td>
                 </tr>`;
             });
 
-            // Chờ tất cả các file lấy xong ngày giờ rồi mới hiển thị
-            const results = await Promise.all(filePromises);
-            tbody.innerHTML = html + results.join('');
-
+            tbody.innerHTML = html;
         } catch (e) { 
-            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;color:red;'>Lỗi tải dữ liệu thật từ GitHub!</td></tr>"; 
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Lỗi kết nối GitHub! Thử lại sau nhé Khôi.</td></tr>"; 
         }
     }
 
-    // Hàm sắp xếp khi bấm vào mũi tên (đã tối ưu chống đơ)
     function sortTable(n) {
         const table = document.querySelector("table");
         const tbody = table.querySelector("tbody");
         const rows = Array.from(tbody.querySelectorAll("tr:not(.no-sort)"));
         const isAsc = table.getAttribute("data-sort-dir") === "asc";
-        
         rows.sort((a, b) => {
             const aVal = a.cells[n].innerText.trim().toLowerCase();
             const bVal = b.cells[n].innerText.trim().toLowerCase();
             return isAsc ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
         });
-
         table.setAttribute("data-sort-dir", isAsc ? "desc" : "asc");
         rows.forEach(row => tbody.appendChild(row));
     }
 
-    // Hàm mở nội dung file để xem
     async function openFile(url, name) {
-        if(!url) return; 
+        if(!url) return;
         let ext = name.split('.').pop().toLowerCase();
         document.getElementById('main-view').style.display = 'none';
         document.getElementById('viewer').style.display = 'block';
