@@ -3,72 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Manager - Full View</title>
+    <title>IPTV Premium Explorer</title>
     <style>
-:root {
-    --bg: #f4f6f9; 
-    --card: #ffffff; 
-    --text: #333333;   /* Chữ đen cho nền sáng */
-    --view-bg: #ffffff; /* Nền trắng cho ô xem file */
-    /* ... các dòng khác giữ nguyên ... */
-}
-
-[data-theme="dark"] {
-    --bg: #121212; 
-    --card: #1e1e1e; 
-    --text: #ffffff;    /* Chữ trắng cho nền tối */
-    --view-bg: #000000;  /* Nền đen cho ô xem file */
-    /* ... các dòng khác giữ nguyên ... */
-}
-
-body { 
-    font-family: 'Segoe UI', sans-serif; 
-    background: var(--bg); 
-    color: var(--text); /* Dòng này giúp chữ toàn trang tự đổi màu */
-    transition: 0.3s; 
-}
-        body {font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); /* Dòng này giúp chữ toàn trang tự đổi màu *transition: 0.3s;}
-
-        .nav { background: var(--nav); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .theme-btn { cursor: pointer; background: rgba(255,255,255,0.2); border: none; padding: 5px 12px; border-radius: 20px; color: white; }
-
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 15px; border-bottom: 1px solid var(--border); }
-        tr:hover { background: var(--item-hover); }
-
-        .back-row { background: rgba(26, 115, 232, 0.08); cursor: pointer; }
-        .back-row td { color: var(--nav); font-size: 24px; font-weight: bold; text-align: center; padding: 10px; }
-
-        .item-name { font-weight: 500; cursor: pointer; display: block; width: 100%; }
-        .badge { background: #e8f0fe; color: #1967d2; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
-
-        /* KHU VỰC HIỂN THỊ FULL */
-        #viewer { display: none; flex-grow: 1; padding: 10px; background: var(--card); border-top: 4px solid var(--nav); }
-        .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-
-        #file-content { white-space: pre-wrap; background: var(--view-bg);*/color: var(--text); */padding: 20px; border-radius: 8px; overflow: auto; font-family: 'Consolas', monospace; font-size: 14px;line-height: 1.6;width: calc(100% - 40px);height: 75vh;border: 1px solid var(--border);}
-
-                #img-view { 
-            width: 100%; /* Full chiều ngang container */
-            max-width: 100%;
-            height: auto; 
-            border-radius: 8px; 
-            display: none; 
-            margin: auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --text: #2d3436;
+            --border: #edf2f7;
+            --hover: #f8fafc;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --view-bg: #ffffff;
+        }
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --border: #334155;
+            --hover: #33415566;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            --view-bg: #000000;
         }
 
-        .row-all { border-left: 6px solid #fbc02d; }
-        .row-intl { border-left: 6px solid #4caf50; }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: all 0.3s ease; }
+        
+        .container { 
+            max-width: 900px; margin: auto; background: var(--card); border-radius: 20px; 
+            box-shadow: var(--shadow); overflow: hidden; min-height: 90vh; display: flex; flex-direction: column;
+            border: 1px solid var(--border);
+        }
+        
+        /* HEADER */
+        .header { 
+            background: var(--primary); padding: 20px; color: white; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h2 { margin: 0; font-size: 18px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        
+        .theme-toggle { 
+            cursor: pointer; background: rgba(255,255,255,0.2); border: none; 
+            width: 40px; height: 40px; border-radius: 12px; color: white; font-size: 18px;
+            backdrop-filter: blur(5px); transition: 0.2s;
+        }
+        .theme-toggle:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
+
+        /* LIST AREA */
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 16px; border-bottom: 1px solid var(--border); transition: 0.2s; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--hover); }
+
+        .back-btn-row { background: var(--hover); cursor: pointer; }
+        .back-btn-row td { text-align: center; font-size: 24px; color: #6366f1; padding: 10px; }
+
+        .item-row { cursor: pointer; display: flex; align-items: center; gap: 12px; }
+        .icon { font-size: 20px; }
+        .file-name { font-weight: 600; font-size: 15px; }
+        .file-info { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+        /* VIEWER - FULL SCREEN STYLE */
+        #viewer { display: none; flex-grow: 1; padding: 15px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #file-content { 
+            background: var(--view-bg); color: var(--text); padding: 20px; 
+            border-radius: 15px; overflow: auto; font-family: 'Fira Code', monospace; 
+            font-size: 14px; line-height: 1.6; height: 65vh; border: 1px solid var(--border);
+            box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.05);
+        }
+
+        #img-view { width: 100%; border-radius: 15px; display: none; box-shadow: var(--shadow); }
+
+        /* PHÂN LOẠI */
+        .row-all { border-left: 5px solid #fbbf24; }
+        .row-intl { border-left: 5px solid #10b981; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="nav">
-
-<span id="status-text" style="font-weight: bold;">📂 QUẢN LÝ IPTV</span>
-        <button class="theme-btn" onclick="toggleTheme()">🌓</button>
+    <div class="header">
+        <h2 id="status-text">🚀 IPTV EXPLORER</h2>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     </div>
     
     <div id="list-area">
@@ -78,8 +94,9 @@ body {
     </div>
 
     <div id="viewer">
-        <div class="view-header">
-            <span id="view-title" style="font-weight: bold; font-size: 14px; color: var(--nav);"></span>
+        <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+            <span style="background:#6366f1; color:white; padding:4px 12px; border-radius:8px; font-size:12px; font-weight:bold;">PREVIEW</span>
+            <span id="view-title" style="font-weight: 600; opacity: 0.8;"></span>
         </div>
         <img id="img-view" src="">
         <pre id="file-content"></pre>
@@ -101,7 +118,7 @@ body {
         viewMode = 'repos';
         document.getElementById('list-area').style.display = 'block';
         document.getElementById('viewer').style.display = 'none';
-        document.getElementById('status-text').innerText = '📂 DANH SÁCH NHÓM';
+        document.getElementById('status-text').innerHTML = '📂 DANH SÁCH NHÓM';
         const res = await fetch(`https://api.github.com/users/${USER}/repos?sort=updated`);
         render(await res.json(), 'repo');
     }
@@ -110,28 +127,26 @@ body {
         viewMode = 'files';
         document.getElementById('list-area').style.display = 'block';
         document.getElementById('viewer').style.display = 'none';
-        document.getElementById('status-text').innerText = `📁 ${repoName.toUpperCase()}`;
+        document.getElementById('status-text').innerHTML = `📁 ${repoName.toUpperCase()}`;
         const res = await fetch(`https://api.github.com/repos/${USER}/${repoName}/contents/`);
         render(await res.json(), 'file');
     }
 
     async function openContent(url, name) {
-        const area = document.getElementById('list-area');
-        const v = document.getElementById('viewer');
-        const img = document.getElementById('img-view');
-        const txt = document.getElementById('file-content');
-        
-        area.style.display = 'none'; // Ẩn danh sách để hiện nội dung Full
-        v.style.display = 'block';
+        document.getElementById('list-area').style.display = 'none';
+        document.getElementById('viewer').style.display = 'block';
         document.getElementById('view-title').innerText = name;
         
         const ext = name.split('.').pop().toLowerCase();
         if(['jpg','png','jpeg','gif','webp'].includes(ext)) {
-            img.src = url; img.style.display = 'block'; txt.style.display = 'none';
+            document.getElementById('img-view').src = url;
+            document.getElementById('img-view').style.display = 'block';
+            document.getElementById('file-content').style.display = 'none';
         } else {
             const res = await fetch(url);
-            txt.innerText = await res.text();
-            txt.style.display = 'block'; img.style.display = 'none';
+            document.getElementById('file-content').innerText = await res.text();
+            document.getElementById('file-content').style.display = 'block';
+            document.getElementById('img-view').style.display = 'none';
         }
     }
 
@@ -139,23 +154,17 @@ body {
         const body = document.getElementById('list-body');
         body.innerHTML = '';
         
-        // HÀNG 3 CHẤM ĐỂ BACK (Luôn hiện ở đầu bảng)
+        // NÚT BA CHẤM (BACK)
         const backRow = document.createElement('tr');
-        backRow.className = 'back-row';
+        backRow.className = 'back-btn-row';
         backRow.innerHTML = `<td colspan="2">⋯</td>`;
-        backRow.onclick = () => {
-            if(viewMode === 'files') loadRepos();
-            else alert("Đã ở trang chủ");
-        };
+        backRow.onclick = () => { if(viewMode === 'files') loadRepos(); else document.getElementById('viewer').style.display = 'none'; };
         body.appendChild(backRow);
 
         items.sort((a, b) => {
-            const nA = a.name.toLowerCase();
-            const nB = b.name.toLowerCase();
-            if(nA.includes('all')) return -1;
-            if(nB.includes('all')) return 1;
-            if(nA.includes('international')) return 1;
-            if(nB.includes('international')) return -1;
+            const nA = a.name.toLowerCase(); const nB = b.name.toLowerCase();
+            if(nA.includes('all')) return -1; if(nB.includes('all')) return 1;
+            if(nA.includes('international')) return 1; if(nB.includes('international')) return -1;
             return 0;
         });
 
@@ -164,15 +173,23 @@ body {
             const tr = document.createElement('tr');
             if(item.name.toLowerCase().includes('all')) tr.className = 'row-all';
             if(item.name.toLowerCase().includes('international')) tr.className = 'row-intl';
+            
+            const icon = type === 'repo' ? '📁' : '📄';
+            const subInfo = type === 'repo' ? 'Repository' : `${(item.size/1024).toFixed(1)} KB`;
 
             tr.innerHTML = `
-                <td><span class="item-name">${item.name}</span></td>
-                <td style="text-align: right;"><span class="badge">${item.size ? (item.size/1024).toFixed(1) : '--'} KB</span></td>
+                <td>
+                    <div class="item-row">
+                        <span class="icon">${icon}</span>
+                        <div>
+                            <div class="file-name">${item.name}</div>
+                            <div class="file-info">${subInfo}</div>
+                        </div>
+                    </div>
+                </td>
+                <td style="text-align: right; color: #94a3b8;">❯</td>
             `;
-            tr.onclick = () => {
-                if(type === 'repo') loadFiles(item.name);
-                else openContent(item.download_url, item.name);
-            };
+            tr.onclick = () => { if(type === 'repo') loadFiles(item.name); else openContent(item.download_url, item.name); };
             body.appendChild(tr);
         });
     }
