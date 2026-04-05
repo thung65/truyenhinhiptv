@@ -60,7 +60,7 @@
 <div class="app-container">
     <div class="toolbar">
         <div>
-            <div class="app-name">VMT IPTV MANAGER</div>
+            <div class="app-name">Tệp Tin</div>
             <span id="nav-path" class="toolbar-info">📂 /storage/emulated/0</span>
         </div>
         <button class="btn-theme" onclick="toggleTheme()">🌓</button>
@@ -97,7 +97,7 @@
         currentView = 'repos';
         document.getElementById('list-wrapper').style.display = 'block';
         document.getElementById('viewer-container').style.display = 'none';
-        document.getElementById('nav-path').innerText = `📂 Home / ${GITHUB_USER}`;
+        document.getElementById('nav-path').innerText = `📂 File / ${GITHUB_USER}`;
         const r = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated`);
         renderList(await r.json(), 'repo');
     }
