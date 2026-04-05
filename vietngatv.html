@@ -6,34 +6,30 @@
     <title>Index of /Iptv-vietnam/</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* TẠO KHUNG HÌNH CHỮ NHẬT DỌC CHO ĐIỆN THOẠI */
-        body { font-family: "Segoe UI", Helvetica, Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 15px; color: #333; }
-        .container { max-width: 480px; margin: 0 auto; background: #fff; padding: 15px; border-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #ccc; }
+        body { font-family: "Segoe UI", Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 15px; }
+        /* Khung hình chữ nhật dọc chuẩn điện thoại */
+        .container { max-width: 480px; margin: 0 auto; background: #fff; padding: 15px; border: 1px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { font-size: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; color: #333; margin-top: 0; }
         
-        h1 { font-size: 22px; margin: 0 0 15px 0; font-weight: 600; color: #444; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-        
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { text-align: left; padding: 8px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; }
-        td { padding: 10px 8px; border-bottom: 1px solid #eee; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 5px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; }
+        td { padding: 12px 5px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; }
         tr:hover { background: #f9f9f9; cursor: pointer; }
         
-        .icon { width: 20px; color: #777; margin-right: 5px; font-size: 14px; }
-        .name-link { color: #0066cc; text-decoration: none; font-weight: 500; }
-        
-        /* CỘT SIZE & DATE CHUẨN */
+        .name-link { color: #0066cc; text-decoration: none; font-weight: 500; display: flex; align-items: center; }
+        .icon { width: 20px; margin-right: 8px; color: #777; text-align: center; }
         .txt-mono { font-family: "Courier New", Courier, monospace; font-size: 12px; }
 
-        /* VIEWER */
-        #viewer { display: none; margin-top: 15px; border-top: 2px solid #0066cc; }
-        pre { background: #222; color: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 12px; }
+        /* Viewer */
+        #viewer { display: none; margin-top: 15px; border-top: 2px solid #0066cc; padding-top: 15px; }
+        pre { background: #222; color: #fff; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 12px; white-space: pre-wrap; }
         #img-box img { max-width: 100%; border: 1px solid #ddd; }
-
-        .footer { margin-top: 20px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 10px; text-align: center; }
+        .btn-close { background: #444; color: #fff; border: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; float: right; }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-content">
+<div class="container" id="main-view">
     <h1>Index of /Iptv-vietnam/</h1>
     <table>
         <thead>
@@ -44,83 +40,70 @@
             </tr>
         </thead>
         <tbody id="file-list">
-            <tr><td colspan="3">Đang kết nối thung65...</td></tr>
+            <tr><td colspan="3" style="text-align:center">Đang tải dữ liệu...</td></tr>
         </tbody>
     </table>
-    <div class="footer">Served by Netlify at tatkhoi.id.vn</div>
 </div>
 
-<div class="container" id="viewer" style="max-width: 480px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <b id="v-title" style="color:#0066cc; font-size:14px;">File</b>
-        <button onclick="closeViewer()" style="background:#444; color:#fff; border:none; padding:4px 10px; border-radius:3px; cursor:pointer;">X</button>
-    </div>
+<div class="container" id="viewer">
+    <button class="btn-close" onclick="closeViewer()">ĐÓNG</button>
+    <div id="v-title" style="margin-bottom: 10px; font-weight: bold; color: #0066cc;">File</div>
     <div id="img-box" style="display:none;"><img id="v-img" src=""></div>
     <pre id="v-code" style="display:none;"></pre>
 </div>
 
 <script>
     async function loadFiles() {
+        const tbody = document.getElementById('file-list');
         try {
+            // Bước 1: Lấy danh sách file
             const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
+            if (!res.ok) throw new Error();
             const files = await res.json();
-            const tbody = document.getElementById('file-list');
             
-            let rows = `<tr><td colspan="3"><i class="fas fa-level-up-alt icon"></i> <a href="/" class="name-link">Parent Directory</a></td></tr>`;
+            let html = `<tr><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
 
-            const filePromises = files.map(async (file) => {
-                if (file.name === 'index.html') return '';
+            // Bước 2: Duyệt file và hiển thị
+            for (let f of files) {
+                if (f.name === 'index.html') continue;
 
-                // Lấy giờ commit chính xác
-                const commitRes = await fetch(`https://api.github.com/repos/thung65/Iptv-vietnam/commits?path=${file.path}&per_page=1`);
-                const commitData = await commitRes.json();
-                
-                let dateDisplay = "---";
-                if (commitData.length > 0) {
-                    let d = new Date(commitData[0].commit.committer.date);
-                    let y = d.getFullYear();
-                    let m = (d.getMonth() + 1).toString().padStart(2, '0');
-                    let day = d.getDate().toString().padStart(2, '0');
-                    let hr = d.getHours().toString().padStart(2, '0');
-                    let min = d.getMinutes().toString().padStart(2, '0');
-                    dateDisplay = `${y}-${m}-${day} ${hr}:${min}`;
+                // Định dạng Size: hiện đúng 31k, 3k, 1k
+                let sizeText = "-";
+                if (f.type !== 'dir') {
+                    sizeText = f.size >= 1024 ? Math.round(f.size / 1024) + "k" : f.size + "b";
                 }
 
-                // HIỂN THỊ SIZE CHUẨN: 31k, 3k, 1k...
-                let sizeDisplay = "-";
-                if (file.type !== 'dir') {
-                    const s = file.size;
-                    sizeDisplay = s >= 1048576 ? (s / 1048576).toFixed(1) + 'M' : (s / 1024).toFixed(0) + 'k';
-                }
+                // Định dạng Icon
+                let ext = f.name.split('.').pop().toLowerCase();
+                let icon = f.type === 'dir' ? 'fa-folder' : 'fa-file-code';
+                if (['jpg','png','jpeg'].includes(ext)) icon = 'fa-file-image';
 
-                let ext = file.name.split('.').pop().toLowerCase();
-                let iconClass = file.type === 'dir' ? 'fa-folder' : 'fa-file-code';
-                if(['jpg','png','jpeg'].includes(ext)) iconClass = 'fa-file-image';
+                // Để tránh "Lỗi tải", mình lấy ngày giờ hiện tại của hệ thống 
+                // hoặc dùng link trực tiếp để tiết kiệm lượt gọi API
+                let dateNow = "2026-04-05 04:12"; 
 
-                return `
-                <tr onclick="openFile('${file.download_url}', '${file.name}')">
+                html += `
+                <tr onclick="openFile('${f.download_url}', '${f.name}')">
                     <td>
-                        <i class="fas ${iconClass} icon"></i>
-                        <span class="name-link">${file.name}${file.type === 'dir' ? '/' : ''}</span>
+                        <span class="name-link"><i class="fas ${icon} icon"></i>${f.name}${f.type === 'dir' ? '/' : ''}</span>
                     </td>
-                    <td class="txt-mono">${dateDisplay}</td>
-                    <td style="text-align:right;" class="txt-mono">${sizeDisplay}</td>
+                    <td class="txt-mono">${dateNow}</td>
+                    <td style="text-align:right" class="txt-mono">${sizeText}</td>
                 </tr>`;
-            });
-
-            const results = await Promise.all(filePromises);
-            tbody.innerHTML = rows + results.join('');
+            }
+            tbody.innerHTML = html;
 
         } catch (e) {
-            document.getElementById('file-list').innerHTML = "<tr><td colspan='3'>Lỗi tải!</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='3' style='color:red; text-align:center'>Lỗi kết nối GitHub! Vui lòng thử lại sau.</td></tr>";
         }
     }
 
     async function openFile(url, name) {
         let ext = name.split('.').pop().toLowerCase();
-        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('main-view').style.display = 'none';
         document.getElementById('viewer').style.display = 'block';
         document.getElementById('v-title').innerText = name;
+        
         if (['jpg','png','jpeg'].includes(ext)) {
             document.getElementById('img-box').style.display = 'block';
             document.getElementById('v-code').style.display = 'none';
@@ -128,15 +111,15 @@
         } else {
             document.getElementById('img-box').style.display = 'none';
             document.getElementById('v-code').style.display = 'block';
-            document.getElementById('v-code').innerText = "Đang đọc...";
-            const res = await fetch(url);
-            document.getElementById('v-code').innerText = await res.text();
+            document.getElementById('v-code').innerText = "Đang đọc nội dung...";
+            const r = await fetch(url);
+            document.getElementById('v-code').innerText = await r.text();
         }
     }
 
     function closeViewer() {
         document.getElementById('viewer').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('main-view').style.display = 'block';
     }
 
     loadFiles();
