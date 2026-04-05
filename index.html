@@ -3,187 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VMT IPTV Manager</title>
+    <title>VMT IPTV MANAGER</title>
     <style>
         :root {
-            --bg: #f8f9fa; --card: #ffffff; --text: #212529; --accent: #007bff;
-            --border: #dee2e6; --item-hover: #f1f3f5; --meta: #6c757d;
+            --bg: #f4f6f8; --card: #ffffff; --text: #333; --accent: #007bff;
+            --border: #ececec; --item-hover: #f9f9f9;
         }
         [data-theme="dark"] {
-            --bg: #121212; --card: #1e1e1e; --text: #e9ecef; --accent: #3791ff;
-            --border: #333333; --item-hover: #2c2c2c; --meta: #adb5bd;
+            --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #3791ff;
+            --border: #333; --item-hover: #252525;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.2s; }
-        .app-container { max-width: 800px; margin: auto; background: var(--card); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; min-height: 90vh; display: flex; flex-direction: column; border: 1px solid var(--border); }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: 0.2s; }
         
-        /* TOOLBAR */
-        .toolbar { background: var(--accent); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .app-name { font-weight: bold; font-size: 16px; letter-spacing: 0.5px; }
-        .toolbar-info { font-size: 12px; opacity: 0.9; margin-top: 2px; display: block; }
-        .btn-theme { cursor: pointer; background: rgba(255,255,255,0.2); border: none; padding: 8px; border-radius: 8px; color: white; line-height: 1; }
+        /* HEADER PHONG CÁCH BIO-LINK (ẢNH 3) */
+        .profile-section { text-align: center; padding: 40px 20px; background: var(--card); border-bottom: 1px solid var(--border); }
+        .profile-logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); padding: 3px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .profile-name { font-size: 24px; font-weight: bold; margin: 0; color: var(--text); letter-spacing: 1px; }
+        .profile-bio { font-size: 14px; opacity: 0.7; margin-top: 8px; }
 
+        /* NÚT MẠNG XÃ HỘI (ẢNH 3) */
+        .social-links { margin-top: 20px; display: flex; justify-content: center; gap: 15px; }
+        .social-btn { text-decoration: none; padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: bold; color: white; transition: 0.3s; }
+        .btn-fb { background: #1877F2; } .btn-tk { background: #000000; }
+        .social-btn:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        /* DANH SÁCH GIAO DIỆN PHẲNG (KHÔNG GẠCH NGANG) */
+        .container { max-width: 800px; margin: 25px auto; background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; }
         
-        /* BỎ GẠCH NGANG GIỮA CÁC HÀNG */
-        .file-item td { padding: 12px 16px; vertical-align: middle; border: none; }
-        .file-item { cursor: pointer; border: none; }
-        .file-item:hover { background: var(--item-hover); }
-
-        /* BA CHẤM BÊN TRÁI */
-        .dot-col { width: 40px; text-align: center; font-size: 22px; font-weight: bold; color: var(--accent); }
-        .file-icon { font-size: 22px; width: 40px; text-align: center; opacity: 0.8; }
-        .file-name { font-weight: 500; font-size: 15px; display: block; }
-        .file-meta { font-size: 11px; color: var(--meta); margin-top: 2px; }
-
-        /* KHU VỰC XEM FILE */
-        #viewer-container { display: none; flex-grow: 1; padding: 10px; background: var(--bg); }
-        .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 5px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
-        .btn-close { background: #dc3545; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        /* THIẾT KẾ CỘT BA CHẤM (BA CHẤM TRỐNG TRƠN) */
+        .dot-row td { padding: 15px; font-size: 24px; font-weight: bold; color: var(--accent); cursor: pointer; }
         
-        #content-box { 
-            background: var(--card); color: var(--text); padding: 15px; 
-            border-radius: 8px; overflow: auto; font-family: 'Consolas', monospace; 
-            font-size: 13px; line-height: 1.5; height: 70vh; border: 1px solid var(--border);
-            white-space: pre-wrap; margin: 0;
-        }
-
-        #img-box { width: 100%; height: auto; border-radius: 8px; display: none; }
+        /* CÁC HÀNG NỘI DUNG */
+        .item-row td { padding: 15px; vertical-align: middle; cursor: pointer; border: none; }
+        .item-row:hover { background: var(--item-hover); }
         
-        /* ĐƯỜNG VIỀN MÀU BÊN TRÁI (Tùy chọn) */
-        .row-all { border-left: 5px solid #ffc107 !important; }
-        .row-intl { border-left: 5px solid #28a745 !important; }
+        .col-icon { width: 50px; text-align: center; font-size: 22px; }
+        .col-name { font-weight: 500; font-size: 16px; }
+        .col-date { text-align: right; font-size: 12px; color: #999; padding-right: 20px !important; }
+
+        /* NÚT CHUYỂN MÀU */
+        .theme-toggle { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 20px; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="toolbar">
-        <div>
-            <div class="app-name">Tệp Tin</div>
-            <span id="nav-path" class="toolbar-info">📂 /storage/emulated/0</span>
-        </div>
-        <button class="btn-theme" onclick="toggleTheme()">🌓</button>
-    </div>
-    
-    <div id="list-wrapper">
-        <table>
-            <tbody id="main-body"></tbody>
-        </table>
-    </div>
+<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
 
-    <div id="viewer-container">
-        <div class="viewer-header">
-            <span id="file-title" style="font-size: 13px; font-weight: bold; opacity: 0.7;"></span>
-            <button class="btn-close" onclick="exitViewer()">✕ ĐÓNG</button>
-        </div>
-        <img id="img-box" src="">
-        <pre id="content-box"></pre>
+<div class="profile-section">
+    <img src="https://github.com/thung65.png" class="profile-logo" alt="VMT">
+    <h1 class="profile-name">TRẦN KHÔI B</h1>
+    <p class="profile-bio">Web Developer & Tech Enthusiast</p>
+    <div class="social-links">
+        <a href="#" class="social-btn btn-fb">FACEBOOK</a>
+        <a href="https://www.tiktok.com/@tranthai845" class="social-btn btn-tk">TIKTOK</a>
     </div>
 </div>
 
-<script>
-    const GITHUB_USER = 'thung65';
-    let currentView = 'repos';
+<div class="container">
+    <table>
+        <tbody>
+            <tr class="dot-row">
+                <td style="width: 50px; text-align: center;">⋯</td>
+                <td></td>
+                <td></td>
+            </tr>
 
+            <tr class="item-row">
+                <td class="col-icon">📁</td>
+                <td class="col-name">Danh sách IPTV</td>
+                <td class="col-date">2026-04-05</td>
+            </tr>
+
+            <tr class="item-row">
+                <td class="col-icon">🖼️</td>
+                <td class="col-name">Anh_nen_dep.jpg</td>
+                <td class="col-date">2026-04-05</td>
+            </tr>
+
+            <tr class="item-row">
+                <td class="col-icon">📄</td>
+                <td class="col-name">huong_dan.txt</td>
+                <td class="col-date">2026-04-05</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
     function toggleTheme() {
         const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
     }
+    // Giữ màu khi tải lại trang
     if(localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-
-    async function fetchRepos() {
-        currentView = 'repos';
-        document.getElementById('list-wrapper').style.display = 'block';
-        document.getElementById('viewer-container').style.display = 'none';
-        document.getElementById('nav-path').innerText = `📂 File / ${GITHUB_USER}`;
-        const r = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated`);
-        renderList(await r.json(), 'repo');
-    }
-
-    async function fetchFiles(repoName) {
-        currentView = 'files';
-        document.getElementById('list-wrapper').style.display = 'block';
-        document.getElementById('viewer-container').style.display = 'none';
-        document.getElementById('nav-path').innerText = `📁 ${repoName}`;
-        const r = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${repoName}/contents/`);
-        renderList(await r.json(), 'file');
-    }
-
-    async function viewFile(url, name) {
-        document.getElementById('list-wrapper').style.display = 'none';
-        document.getElementById('viewer-container').style.display = 'block';
-        document.getElementById('file-title').innerText = name;
-        const ext = name.split('.').pop().toLowerCase();
-        const img = document.getElementById('img-box');
-        const txt = document.getElementById('content-box');
-        if(['jpg','png','jpeg','webp','gif'].includes(ext)) {
-            img.src = url; img.style.display = 'block'; txt.style.display = 'none';
-        } else {
-            const res = await fetch(url);
-            txt.innerText = await res.text();
-            txt.style.display = 'block'; img.style.display = 'none';
-        }
-    }
-
-    function exitViewer() {
-        document.getElementById('viewer-container').style.display = 'none';
-        document.getElementById('list-wrapper').style.display = 'block';
-    }
-
-    function renderList(data, type) {
-       const body = document.getElementById('main-body');
-       body.innerHTML = '';
-
-    // 1. HÀNG QUAY LẠI: Chỉ hiện dấu ⋯ bên trái, cột bên phải để trống
-    const back = document.createElement('tr');
-    back.className = 'file-item';
-    back.innerHTML = `
-        <td class="dot-col">⋯</td>
-        <td></td> 
-    `;
-    back.onclick = () => { if(currentView === 'files') fetchRepos(); };
-    body.appendChild(back);
-
-    // Sắp xếp: All lên đầu, International xuống cuối
-    data.sort((a, b) => {
-        const nA = a.name.toLowerCase(); const nB = b.name.toLowerCase();
-        if(nA.includes('all')) return -1; if(nB.includes('all')) return 1;
-        if(nA.includes('international')) return 1; if(nB.includes('international')) return -1;
-        return 0;
-    });
-
-    // 2. DANH SÁCH FILE/THƯ MỤC: Chỉ hiện Icon và Tên file
-    data.forEach(item => {
-        if(['index.html', '_redirects'].includes(item.name)) return;
-        const tr = document.createElement('tr');
-        tr.className = 'file-item';
-        
-        // Màu lề trái cho All và International
-        if(item.name.toLowerCase().includes('all')) tr.classList.add('row-all');
-        if(item.name.toLowerCase().includes('international')) tr.classList.add('row-intl');
-
-        // Xác định Icon (📄 cho file, 📁 cho repo, 🖼️ cho ảnh)
-        let icon = '📄'; 
-        const ext = item.name.split('.').pop().toLowerCase();
-        if (type === 'repo') {
-            icon = '📁'; 
-        } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-            icon = '🖼️'; 
-        }
-
-        // Chỉ hiện tên file, không hiện mô tả dung lượng
-        tr.innerHTML = `
-            <td class="file-icon">${icon}</td>
-            <td><span class="file-name">${item.name}</span></td>
-        `;
-        tr.onclick = () => type === 'repo' ? fetchFiles(item.name) : viewFile(item.download_url, item.name);
-        body.appendChild(tr);
-    });
-} 
-
-    fetchRepos(); // Khởi chạy ứng dụng
 </script>
+
 </body>
 </html>
