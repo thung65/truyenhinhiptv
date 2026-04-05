@@ -3,147 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV File Explorer - thung65</title>
+    <title>IPTV Explorer - Horizontal Menu</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6f9; margin: 0; padding: 15px; }
-        .container { max-width: 1000px; margin: auto; background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden; }
-        .nav { background: #1a73e8; color: white; padding: 15px; display: flex; align-items: center; gap: 10px; }
-        .nav a { color: white; text-decoration: none; font-weight: bold; cursor: pointer; }
+        :root {
+            --bg: #f4f6f9; --card: #ffffff; --text: #333; --nav: #1a73e8;
+            --border: #eee; --item-hover: #f0f4f8;
+        }
+        [data-theme="dark"] {
+            --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --nav: #0d47a1;
+            --border: #333; --item-hover: #2c2c2c;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.3s; }
+        .container { max-width: 1000px; margin: auto; background: var(--card); border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); overflow: hidden; }
         
+        /* THANH NAV */
+        .nav { background: var(--nav); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-info { font-weight: bold; font-size: 14px; }
+        .theme-btn { cursor: pointer; background: rgba(255,255,255,0.2); border: none; padding: 5px 12px; border-radius: 20px; color: white; font-size: 16px; }
+
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; background: #f8f9fa; border-bottom: 2px solid #eee; color: #5f6368; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
+        th { text-align: left; padding: 12px; background: rgba(0,0,0,0.05); border-bottom: 2px solid var(--border); font-size: 12px; text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: var(--item-hover); }
+
+        /* NÚT BA CHẤM NẰM NGANG */
+        .btn-dots { 
+            cursor: pointer; 
+            padding: 5px; 
+            font-size: 22px; 
+            color: var(--nav); 
+            text-align: center;
+            width: 40px;
+            display: inline-block;
+            line-height: 1;
+        }
+        .btn-dots:hover { background: rgba(26, 115, 232, 0.1); border-radius: 8px; }
+
+        .name-click { font-weight: 500; cursor: pointer; color: var(--text); }
+        .name-click:hover { color: var(--nav); text-decoration: underline; }
         
-        .item-btn { color: #1a73e8; font-weight: 500; cursor: pointer; text-decoration: none; border: none; background: none; padding: 0; font-size: 15px; }
-        .item-btn:hover { text-decoration: underline; }
-        
-        /* Khu vực hiển thị nội dung file */
-        #viewer-container { display: none; padding: 20px; background: #282c34; color: #abb2bf; border-radius: 0 0 12px 12px; position: relative; }
-        pre { white-space: pre-wrap; word-wrap: break-word; margin: 0; font-family: monospace; font-size: 13px; max-height: 500px; overflow-y: auto; }
-        .close-btn { position: absolute; top: 10px; right: 10px; background: #e06c75; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-        
-        .badge { background: #e8f0fe; color: #1967d2; padding: 3px 8px; border-radius: 10px; font-size: 12px; }
-        .special-all { background: #fff9c4 !important; }
-        .special-intl { background: #e8f5e9 !important; }
+        .badge-size { background: #e8f0fe; color: #1967d2; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+
+        /* KHU VỰC HIỂN THỊ FILE */
+        #viewer { display: none; padding: 15px; border-top: 4px solid var(--nav); background: var(--card); }
+        #file-content { white-space: pre-wrap; background: #000; color: #4caf50; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 13px; }
+        #img-view { max-width: 100%; border-radius: 8px; display: none; margin: 10px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
+        /* MÀU ĐẶC BIỆT */
+        .row-all { border-left: 5px solid #fbc02d; background: rgba(251, 192, 45, 0.05); }
+        .row-intl { border-left: 5px solid #4caf50; background: rgba(76, 175, 80, 0.05); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="nav">
-        <a onclick="showRepos()">🏠 Trang chủ</a> <span id="current-path">/ Danh sách nhóm</span>
+        <span id="status-text" class="nav-info">📂 TRANG CHỦ</span>
+        <button class="theme-btn" onclick="toggleTheme()">🌓</button>
     </div>
     
-    <div id="table-area">
+    <div id="list-container">
         <table>
             <thead>
-                <tr id="table-header">
-                    <th>Tên Nhóm / Tệp</th>
-                    <th>Dung lượng</th>
-                    <th>Hành động</th>
+                <tr>
+                    <th style="width: 50px;"></th> <th>Tên Tệp / Nhóm</th>
+                    <th style="text-align: right;">Size</th>
                 </tr>
             </thead>
-            <tbody id="list-body">
-                </tbody>
+            <tbody id="list-body"></tbody>
         </table>
     </div>
 
-    <div id="viewer-container">
-        <button class="close-btn" onclick="closeViewer()">Đóng</button>
-        <h4 id="viewing-file-name" style="color: #61afef; margin-top: 0;"></h4>
-        <pre id="file-content">Đang tải nội dung...</pre>
+    <div id="viewer">
+        <h4 id="view-title" style="margin: 0 0 10px 0; font-size: 14px; color: var(--nav);"></h4>
+        <img id="img-view" src="">
+        <pre id="file-content"></pre>
     </div>
 </div>
 
 <script>
     const USER = 'thung65';
-    const listBody = document.getElementById('list-body');
-    const pathText = document.getElementById('current-path');
+    let viewMode = 'repos';
 
-    // 1. Hiển thị tất cả các Nhóm (Repository)
-    async function showRepos() {
-        closeViewer();
-        pathText.innerText = '/ Tất cả nhóm';
+    function toggleTheme() {
+        const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem('theme', t);
+    }
+    if(localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+
+    async function loadRepos() {
+        viewMode = 'repos';
+        document.getElementById('viewer').style.display = 'none';
+        document.getElementById('status-text').innerText = '📂 TẤT CẢ NHÓM';
         const res = await fetch(`https://api.github.com/users/${USER}/repos?sort=updated`);
-        const repos = await res.json();
-        renderList(repos, 'repo');
+        render(await res.json(), 'repo');
     }
 
-    // 2. Hiển thị File trong Nhóm
-    async function showFiles(repoName) {
-        closeViewer();
-        pathText.innerText = `/ ${repoName}`;
+    async function loadFiles(repoName) {
+        viewMode = 'files';
+        document.getElementById('viewer').style.display = 'none';
+        document.getElementById('status-text').innerText = `📁 NHÓM: ${repoName.toUpperCase()}`;
         const res = await fetch(`https://api.github.com/repos/${USER}/${repoName}/contents/`);
-        const files = await res.json();
-        renderList(files, 'file', repoName);
+        render(await res.json(), 'file');
     }
 
-    // 3. Đọc và hiện nội dung file (Không chuyển sang raw)
-    async function viewFile(url, fileName) {
-        const viewer = document.getElementById('viewer-container');
-        const contentBox = document.getElementById('file-content');
-        const nameBox = document.getElementById('viewing-file-name');
+    async function openContent(url, name) {
+        const v = document.getElementById('viewer');
+        const img = document.getElementById('img-view');
+        const txt = document.getElementById('file-content');
+        v.style.display = 'block';
+        document.getElementById('view-title').innerText = "ĐANG XEM: " + name;
         
-        viewer.style.display = 'block';
-        nameBox.innerText = `Nội dung: ${fileName}`;
-        contentBox.innerText = 'Đang truy xuất dữ liệu từ server...';
-
-        try {
+        const ext = name.split('.').pop().toLowerCase();
+        if(['jpg','png','jpeg','gif','webp'].includes(ext)) {
+            img.src = url; img.style.display = 'block'; txt.style.display = 'none';
+        } else {
             const res = await fetch(url);
-            const text = await res.text();
-            contentBox.innerText = text;
-            viewer.scrollIntoView({ behavior: 'smooth' });
-        } catch (e) {
-            contentBox.innerText = 'Lỗi: Không thể đọc file này.';
+            txt.innerText = await res.text();
+            txt.style.display = 'block'; img.style.display = 'none';
         }
+        v.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function renderList(items, type, repoName = '') {
-        listBody.innerHTML = '';
+    function render(items, type) {
+        const body = document.getElementById('list-body');
+        body.innerHTML = '';
         
-        // Sắp xếp All lên đầu, International xuống cuối
         items.sort((a, b) => {
             const nA = a.name.toLowerCase();
             const nB = b.name.toLowerCase();
-            if (nA.includes('all')) return -1;
-            if (nB.includes('all')) return 1;
-            if (nA.includes('international')) return 1;
-            if (nB.includes('international')) return -1;
+            if(nA.includes('all')) return -1;
+            if(nB.includes('all')) return 1;
+            if(nA.includes('international')) return 1;
+            if(nB.includes('international')) return -1;
             return 0;
         });
 
         items.forEach(item => {
-            if (item.name === 'index.html' || item.name === '_redirects') return;
-
+            if(item.name === 'index.html' || item.name === '_redirects') return;
             const tr = document.createElement('tr');
-            if (item.name.toLowerCase().includes('all')) tr.className = 'special-all';
-            if (item.name.toLowerCase().includes('international')) tr.className = 'special-intl';
+            if(item.name.toLowerCase().includes('all')) tr.className = 'row-all';
+            if(item.name.toLowerCase().includes('international')) tr.className = 'row-intl';
 
-            const size = item.size ? (item.size / 1024).toFixed(1) + ' KB' : '--';
-            
-            let actionHtml = '';
-            if (type === 'repo') {
-                actionHtml = `<button class="item-btn" onclick="showFiles('${item.name}')">📁 Mở nhóm</button>`;
-            } else {
-                actionHtml = `<button class="item-btn" onclick="viewFile('${item.download_url}', '${item.name}')">👁️ Xem nội dung</button>`;
-            }
+            // CỘT 3 CHẤM NẰM NGANG (⋯)
+            const dotTd = document.createElement('td');
+            dotTd.innerHTML = `<span class="btn-dots">⋯</span>`;
+            dotTd.onclick = (e) => {
+                e.stopPropagation();
+                if(viewMode === 'files') loadRepos(); // Đang ở trong file thì Back ra Repo
+                else if(document.getElementById('viewer').style.display === 'block') document.getElementById('viewer').style.display = 'none';
+                else alert("Đã ở Trang chủ");
+            };
 
-            tr.innerHTML = `
-                <td><b>${item.name}</b></td>
-                <td><span class="badge">${size}</span></td>
-                <td>${actionHtml}</td>
-            `;
-            listBody.appendChild(tr);
+            const nameTd = document.createElement('td');
+            nameTd.className = 'name-click';
+            nameTd.innerText = item.name;
+            nameTd.onclick = () => {
+                if(type === 'repo') loadFiles(item.name);
+                else openContent(item.download_url, item.name);
+            };
+
+            const sizeTd = document.createElement('td');
+            sizeTd.style.textAlign = 'right';
+            sizeTd.innerHTML = `<span class="badge-size">${item.size ? (item.size/1024).toFixed(1) : '--'} KB</span>`;
+
+            tr.appendChild(dotTd);
+            tr.appendChild(nameTd);
+            tr.appendChild(sizeTd);
+            body.appendChild(tr);
         });
     }
 
-    function closeViewer() {
-        document.getElementById('viewer-container').style.display = 'none';
-    }
-
-    // Khởi tạo
-    showRepos();
+    loadRepos();
 </script>
-
 </body>
 </html>
