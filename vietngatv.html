@@ -6,70 +6,101 @@
     <title>Index of /Iptv-vietnam/ - Trần Tất Khôi B</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 40px 20px; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        h1 { font-size: 26px; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; color: #555; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 20px; color: #333; margin: 0; }
+        .container { max-width: 900px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { font-size: 22px; border-bottom: 2px solid #dee2e6; padding-bottom: 15px; color: #007bff; }
+        
+        /* Giao diện danh sách file */
+        #main-content { display: block; }
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; color: #0066cc; }
-        td { padding: 12px; border-bottom: 1px solid #dee2e6; font-size: 14px; }
-        tr:hover { background: #f8f9fa; }
-        .file-item { display: flex; align-items: center; cursor: pointer; width: 100%; }
-        .icon { width: 25px; color: #777; margin-right: 10px; }
-        .footer { margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid #dee2e6; padding-top: 15px; }
+        th { text-align: left; padding: 12px; background: #f8f9fa; border-bottom: 2px solid #dee2e6; color: #555; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        tr:hover { background: #f1f7ff; cursor: pointer; }
+        .icon { margin-right: 10px; color: #576574; }
+
+        /* Giao diện khung xem file (Viewer) */
+        #viewer { display: none; }
+        .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+        pre { background: #282c34; color: #abb2bf; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.5; }
+        .btn-close { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        .footer { margin-top: 30px; font-size: 12px; color: #888; text-align: center; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Index of /Iptv-vietnam/</h1>
+<div class="container" id="main-content">
+    <h1><i class="fas fa-folder-open"></i> Index of /Iptv-vietnam/</h1>
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Action</th>
+                <th>Tên File</th>
+                <th style="text-align: right;">Xem</th>
             </tr>
         </thead>
         <tbody id="file-table">
-            <tr><td colspan="2"><i class="fas fa-spinner fa-spin icon"></i> Đang tải danh sách file từ thung65...</td></tr>
+            <tr><td colspan="2" style="text-align:center;">Đang kết nối GitHub thung65...</td></tr>
         </tbody>
     </table>
-    <div class="footer">
-        Proudly Served by Netlify Web Server at tatkhoi.id.vn Port 443
+    <div class="footer">Proudly Served by Netlify at tatkhoi.id.vn</div>
+</div>
+
+<div class="container" id="viewer">
+    <div class="v-header">
+        <strong id="v-title" style="color: #007bff;">File nội dung</strong>
+        <button class="btn-close" onclick="closeViewer()">ĐÓNG XEM</button>
     </div>
+    <pre id="v-content">Đang tải nội dung...</pre>
 </div>
 
 <script>
-    // BỎ SẠCH CONST - TRỎ THẲNG REPO Iptv-vietnam
+    // Tự động tải danh sách file khi mở trang
     async function loadFiles() {
         try {
-            // Nhúng thẳng user và repo vào link fetch
+            // Nhúng thẳng User và Repo của Khôi vào link
             const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
             const data = await res.json();
+            const table = document.getElementById('file-table');
             
-            // Sửa lỗi ID: Phải khớp với id="file-table" ở trên
-            const list = document.getElementById('file-table');
-            
-            list.innerHTML = data.map(file => {
+            table.innerHTML = data.map(file => {
                 if(file.name === 'index.html' || file.type === 'dir') return '';
                 
                 return `
-                    <tr>
-                        <td>
-                            <div class="file-item" onclick="window.open('${file.download_url}', '_blank')">
-                                <i class="fas fa-file-code icon" style="color:#576574"></i>
-                                <span style="color:#0066cc; font-weight:500;">${file.name}</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-eye" style="font-size:12px; color:#ccc"></i> View Raw</td>
+                    <tr onclick="openFile('${file.download_url}', '${file.name}')">
+                        <td><i class="fas fa-file-code icon"></i> ${file.name}</td>
+                        <td style="text-align: right;"><i class="fas fa-eye" style="color:#ccc"></i></td>
                     </tr>
                 `;
             }).join('');
         } catch (e) { 
-            document.getElementById('file-table').innerHTML = "<tr><td colspan='2'>Lỗi: Không thể tải danh sách!</td></tr>";
+            document.getElementById('file-table').innerHTML = "<tr><td>Lỗi tải dữ liệu!</td></tr>"; 
         }
     }
-    
+
+    // Hàm đọc nội dung file và hiện lên màn hình
+    async function openFile(url, name) {
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('viewer').style.display = 'block';
+        document.getElementById('v-title').innerText = "Đang xem file: " + name;
+        document.getElementById('v-content').innerText = "Vui lòng đợi, đang lấy nội dung file...";
+
+        try {
+            const res = await fetch(url);
+            const text = await res.text();
+            document.getElementById('v-content').innerText = text;
+        } catch (e) {
+            document.getElementById('v-content').innerText = "Lỗi: Không thể hiển thị nội dung file này!";
+        }
+    }
+
+    // Hàm quay lại danh sách
+    function closeViewer() {
+        document.getElementById('viewer').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+    }
+
     loadFiles();
 </script>
+
 </body>
 </html>
