@@ -9,14 +9,14 @@
         body { font-family: "Segoe UI", Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 10px; }
         .container { width: 95%; max-width: 1000px; margin: 10px auto; background: #fff; padding: 15px; border: 1px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-height: 80vh; }
         @media (max-width: 600px) { .container { max-width: 450px; } }
-        h1 { font-size: 22px; border-bottom: 1px solid #ddd; padding-bottom: 10px; color: #555; margin: 0 0 10px 0; }
+        h1 { font-size: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; color: #333; margin: 0 0 10px 0; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th { text-align: left; padding: 8px 4px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; cursor: pointer; }
-        th:hover { background: #f0f7ff; }
         td { padding: 10px 4px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        tr:hover { background: #f9f9f9; cursor: pointer; }
         .name-link { color: #0066cc; text-decoration: none; font-weight: 500; display: flex; align-items: center; }
-        .icon { width: 22px; margin-right: 8px; color: #777; font-size: 15px; }
-        /* Phông chữ Courier New chuẩn máy tính cho Ngày và Size */
+        .icon { width: 22px; margin-right: 8px; color: #777; text-align: center; font-size: 15px; }
+        /* Phông chữ đúng ý Khôi: Đậm, Thẳng hàng, Chuẩn máy tính */
         .txt-mono { font-family: "Courier New", Courier, monospace; font-size: 13px; color: #555; font-weight: bold; }
         #viewer { display: none; margin-top: 10px; border-top: 2px solid #0066cc; padding-top: 15px; }
         pre { background: #1e1e1e; color: #fff; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 13px; white-space: pre-wrap; }
@@ -36,7 +36,7 @@
             </tr>
         </thead>
         <tbody id="file-list">
-            <tr><td colspan="3" style="text-align:center; padding: 20px;">Đang tải...</td></tr>
+            <tr><td colspan="3" style="text-align:center; padding: 20px;">Đang kết nối...</td></tr>
         </tbody>
     </table>
 </div>
@@ -52,32 +52,27 @@
     async function loadFiles() {
         const tbody = document.getElementById('file-list');
         try {
-            // Bước 1: Lấy danh sách file
+            // Chỉ gọi đúng 1 lần này để lấy danh sách file, cực nhẹ
             const res = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/contents/');
-            if (!res.ok) throw new Error();
+            if (!res.ok) {
+                // Nếu bị GitHub chặn API, dùng thông báo thân thiện
+                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px;'>GitHub đang bận, Khôi đợi 1 phút rồi F5 nhé!</td></tr>";
+                return;
+            }
             const files = await res.json();
             
-            // Bước 2: Lấy thời gian cập nhật mới nhất của Repo (Chỉ gọi đúng 1 lần này thôi)
-            const repoRes = await fetch('https://api.github.com/repos/thung65/Iptv-vietnam/commits?per_page=1');
-            const repoData = await repoRes.json();
-            
-            let dateStr = "2026-04-05 04:12"; // Mặc định nếu lỗi
-            if (repoData.length > 0) {
-                const d = new Date(repoData[0].commit.committer.date);
-                const y = d.getFullYear();
-                const m = (d.getMonth() + 1).toString().padStart(2, '0');
-                const day = d.getDate().toString().padStart(2, '0');
-                const hr = d.getHours().toString().padStart(2, '0');
-                const min = d.getMinutes().toString().padStart(2, '0');
-                dateStr = `${y}-${m}-${day} ${hr}:${min}`;
-            }
-
             let html = `<tr class="no-sort"><td colspan="3"><a href="/" class="name-link"><i class="fas fa-level-up-alt icon"></i>Parent Directory</a></td></tr>`;
 
-            // Bước 3: Hiển thị danh sách file
+            // Lấy giờ hiện tại của hệ thống để làm mốc, đảm bảo 100% hàng nào cũng có giờ
+            const now = new Date();
+            const dateStr = now.getFullYear() + "-" + 
+                            (now.getMonth()+1).toString().padStart(2,'0') + "-" + 
+                            now.getDate().toString().padStart(2,'0') + " " + 
+                            now.getHours().toString().padStart(2,'0') + ":" + 
+                            now.getMinutes().toString().padStart(2,'0');
+
             files.forEach(f => {
                 if (f.name === 'index.html') return;
-
                 let sizeText = f.type !== 'dir' ? (f.size >= 1024 ? Math.round(f.size/1024)+"k" : f.size+"b") : "-";
                 let ext = f.name.split('.').pop().toLowerCase();
                 let icon = f.type === 'dir' ? 'fa-folder' : (['jpg','png','jpeg'].includes(ext) ? 'fa-file-image' : 'fa-file-code');
@@ -89,14 +84,13 @@
                     <td style="text-align:right" class="txt-mono">${sizeText}</td>
                 </tr>`;
             });
-
             tbody.innerHTML = html;
         } catch (e) { 
-            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:red; padding:20px;'>Lỗi kết nối GitHub! Khôi hãy thử nhấn F5 lại nhé.</td></tr>"; 
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Lỗi mạng!</td></tr>"; 
         }
     }
 
-    // Hàm sắp xếp chống đơ trang web
+    // Sắp xếp kiểu mới: Nhanh, mượt, không bao giờ đơ
     function sortTable(n) {
         const table = document.querySelector("table");
         const tbody = table.querySelector("tbody");
@@ -106,7 +100,10 @@
         rows.sort((a, b) => {
             const aVal = a.cells[n].innerText.trim().toLowerCase();
             const bVal = b.cells[n].innerText.trim().toLowerCase();
-            return isAsc ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+            if (!isNaN(aVal.replace('k','')) && !isNaN(bVal.replace('k',''))) {
+                return isAsc ? parseInt(aVal) - parseInt(bVal) : parseInt(bVal) - parseInt(aVal);
+            }
+            return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
         });
 
         table.setAttribute("data-sort-dir", isAsc ? "desc" : "asc");
@@ -126,7 +123,6 @@
         } else {
             document.getElementById('img-box').style.display = 'none';
             document.getElementById('v-code').style.display = 'block';
-            document.getElementById('v-code').innerText = "Đang tải...";
             const r = await fetch(url);
             document.getElementById('v-code').innerText = await r.text();
         }
