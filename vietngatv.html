@@ -6,25 +6,29 @@
     <title>Index of /Iptv-vietnam/</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: "Segoe UI", Segoe, Tahoma, Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 4px; border: 1px solid #ddd; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        h1 { font-size: 24px; margin: 0 0 15px 0; font-weight: 500; color: #333; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; }
+        /* TẠO KHUNG HÌNH CHỮ NHẬT DỌC CHO ĐIỆN THOẠI */
+        body { font-family: "Segoe UI", Helvetica, Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 480px; margin: 0 auto; background: #fff; padding: 15px; border-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #ccc; }
         
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 10px; border-bottom: 2px solid #dee2e6; color: #0066cc; font-size: 14px; }
-        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; color: #555; }
-        tr:hover { background: #f1f5fb; cursor: pointer; }
+        h1 { font-size: 22px; margin: 0 0 15px 0; font-weight: 600; color: #444; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
         
-        .icon { width: 25px; color: #777; margin-right: 8px; font-size: 16px; }
-        .name-link { color: #0066cc; text-decoration: none; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { text-align: left; padding: 8px; border-bottom: 2px solid #0066cc; color: #0066cc; font-size: 13px; }
+        td { padding: 10px 8px; border-bottom: 1px solid #eee; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        tr:hover { background: #f9f9f9; cursor: pointer; }
         
-        /* Cấu trúc xem nội dung tệp */
-        #viewer { display: none; margin-top: 20px; border-top: 2px solid #0066cc; }
-        .v-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
-        pre { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; font-size: 13px; line-height: 1.5; }
-        #img-box img { max-width: 100%; border: 1px solid #ccc; padding: 4px; background: #fff; }
+        .icon { width: 20px; color: #777; margin-right: 5px; font-size: 14px; }
+        .name-link { color: #0066cc; text-decoration: none; font-weight: 500; }
+        
+        /* CỘT SIZE & DATE CHUẨN */
+        .txt-mono { font-family: "Courier New", Courier, monospace; font-size: 12px; }
 
-        .footer { margin-top: 30px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
+        /* VIEWER */
+        #viewer { display: none; margin-top: 15px; border-top: 2px solid #0066cc; }
+        pre { background: #222; color: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 12px; }
+        #img-box img { max-width: 100%; border: 1px solid #ddd; }
+
+        .footer { margin-top: 20px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
@@ -34,24 +38,24 @@
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Last Modified</th>
-                <th style="text-align:right">Size</th>
+                <th style="width: 45%;">Name</th>
+                <th style="width: 35%;">Last Modified</th>
+                <th style="width: 20%; text-align: right;">Size</th>
             </tr>
         </thead>
         <tbody id="file-list">
-            <tr><td colspan="3"><i class="fas fa-spinner fa-spin"></i> Đang tính toán dung lượng tệp từ thung65...</td></tr>
+            <tr><td colspan="3">Đang kết nối thung65...</td></tr>
         </tbody>
     </table>
-    <div class="footer">Proudly Served by Netlify Web Server at tatkhoi.id.vn Port 443</div>
+    <div class="footer">Served by Netlify at tatkhoi.id.vn</div>
 </div>
 
-<div class="container" id="viewer">
-    <div class="v-header">
-        <strong id="v-title" style="color:#0066cc">Thông tin tệp</strong>
-        <button onclick="closeViewer()" style="background:#d9534f; color:#fff; border:none; padding:6px 12px; border-radius:3px; cursor:pointer; font-weight:bold;">ĐÓNG</button>
+<div class="container" id="viewer" style="max-width: 480px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <b id="v-title" style="color:#0066cc; font-size:14px;">File</b>
+        <button onclick="closeViewer()" style="background:#444; color:#fff; border:none; padding:4px 10px; border-radius:3px; cursor:pointer;">X</button>
     </div>
-    <div id="img-box" style="display:none; text-align:center;"><img id="v-img" src=""></div>
+    <div id="img-box" style="display:none;"><img id="v-img" src=""></div>
     <pre id="v-code" style="display:none;"></pre>
 </div>
 
@@ -67,33 +71,31 @@
             const filePromises = files.map(async (file) => {
                 if (file.name === 'index.html') return '';
 
-                // Lấy giờ commit chính xác từ GitHub
+                // Lấy giờ commit chính xác
                 const commitRes = await fetch(`https://api.github.com/repos/thung65/Iptv-vietnam/commits?path=${file.path}&per_page=1`);
                 const commitData = await commitRes.json();
                 
                 let dateDisplay = "---";
                 if (commitData.length > 0) {
                     let d = new Date(commitData[0].commit.committer.date);
-                    dateDisplay = d.toLocaleString('vi-VN', { 
-                        year: 'numeric', month: '2-digit', day: '2-digit', 
-                        hour: '2-digit', minute: '2-digit', hour12: false 
-                    }).replace(/, /g, ' ');
+                    let y = d.getFullYear();
+                    let m = (d.getMonth() + 1).toString().padStart(2, '0');
+                    let day = d.getDate().toString().padStart(2, '0');
+                    let hr = d.getHours().toString().padStart(2, '0');
+                    let min = d.getMinutes().toString().padStart(2, '0');
+                    dateDisplay = `${y}-${m}-${day} ${hr}:${min}`;
                 }
 
-                // HÀM TÍNH ĐỘ NẶNG CỦA FILE (Size)
+                // HIỂN THỊ SIZE CHUẨN: 31k, 3k, 1k...
                 let sizeDisplay = "-";
                 if (file.type !== 'dir') {
                     const s = file.size;
-                    if (s >= 1048576) {
-                        sizeDisplay = (s / 1048576).toFixed(1) + ' MB';
-                    } else {
-                        sizeDisplay = (s / 1024).toFixed(1) + ' KB';
-                    }
+                    sizeDisplay = s >= 1048576 ? (s / 1048576).toFixed(1) + 'M' : (s / 1024).toFixed(0) + 'k';
                 }
 
                 let ext = file.name.split('.').pop().toLowerCase();
-                let iconClass = file.type === 'dir' ? 'fa-folder' : 'fa-file-alt';
-                if(['jpg','png','jpeg','gif'].includes(ext)) iconClass = 'fa-file-image';
+                let iconClass = file.type === 'dir' ? 'fa-folder' : 'fa-file-code';
+                if(['jpg','png','jpeg'].includes(ext)) iconClass = 'fa-file-image';
 
                 return `
                 <tr onclick="openFile('${file.download_url}', '${file.name}')">
@@ -101,8 +103,8 @@
                         <i class="fas ${iconClass} icon"></i>
                         <span class="name-link">${file.name}${file.type === 'dir' ? '/' : ''}</span>
                     </td>
-                    <td>${dateDisplay}</td>
-                    <td style="text-align:right; font-family: monospace;">${sizeDisplay}</td>
+                    <td class="txt-mono">${dateDisplay}</td>
+                    <td style="text-align:right;" class="txt-mono">${sizeDisplay}</td>
                 </tr>`;
             });
 
@@ -110,7 +112,7 @@
             tbody.innerHTML = rows + results.join('');
 
         } catch (e) {
-            document.getElementById('file-list').innerHTML = "<tr><td colspan='3'>Lỗi tải danh sách tệp!</td></tr>";
+            document.getElementById('file-list').innerHTML = "<tr><td colspan='3'>Lỗi tải!</td></tr>";
         }
     }
 
@@ -119,15 +121,14 @@
         document.getElementById('main-content').style.display = 'none';
         document.getElementById('viewer').style.display = 'block';
         document.getElementById('v-title').innerText = name;
-
-        if (['jpg','png','jpeg','gif'].includes(ext)) {
+        if (['jpg','png','jpeg'].includes(ext)) {
             document.getElementById('img-box').style.display = 'block';
             document.getElementById('v-code').style.display = 'none';
             document.getElementById('v-img').src = url;
         } else {
             document.getElementById('img-box').style.display = 'none';
             document.getElementById('v-code').style.display = 'block';
-            document.getElementById('v-code').innerText = "Đang đọc dữ liệu...";
+            document.getElementById('v-code').innerText = "Đang đọc...";
             const res = await fetch(url);
             document.getElementById('v-code').innerText = await res.text();
         }
