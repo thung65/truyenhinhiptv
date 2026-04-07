@@ -15,71 +15,47 @@
             align-items: center;
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        } 
+        
+/* Tìm đến đoạn CSS của Card và thay bằng cái này */
+.main-card {
+    background: #ffffff;
+    width: 90%;
+    max-width: 380px; /* Tăng độ rộng lên một tí */
+    padding: 50px 35px; /* Tăng khoảng cách bên trong cho thoáng */
+    border-radius: 24px; /* Bo góc tròn hơn nhìn sẽ hiện đại hơn */
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.1); /* Đổ bóng sâu hơn cho nổi */
+    text-align: center;
+    box-sizing: border-box; /* Đảm bảo padding không làm hỏng kích thước */
+}
 
-        /* ĐÂY LÀ CÁI KHUNG MÀ KHÔI MUỐN */
-        .main-card {
-            background: #ffffff;
-            width: 90%;
-            max-width: 350px;
-            padding: 40px 25px;
-            border-radius: 20px; /* Bo góc cực mượt */
-            /* Đổ bóng sâu để tạo hiệu ứng nổi (nhìn rất giống ảnh mẫu) */
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); 
-            text-align: center;
-        }
+/* Khoảng cách giữa các phần bên trong */
+.profile-logo {
+    width: 100px; /* Cho logo to lên một tí */
+    height: 100px;
+    margin-bottom: 25px; /* Đẩy tên xuống xa hơn */
+}
 
-        .profile-logo {
-            width: 85px;
-            height: 85px;
-            border-radius: 50%;
-            border: 1px solid #eee;
-            padding: 3px;
-            margin-bottom: 15px;
-        }
+.name {
+    font-size: 24px; /* Tên to và rõ hơn */
+    margin-bottom: 10px;
+}
 
-        .name {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin: 0;
-        }
+.bio {
+    font-size: 14.5px;
+    margin-bottom: 35px; /* Tạo khoảng trống trước khi đến các nút */
+    line-height: 1.7;
+}
 
-        .sub-title {
-            font-size: 12px;
-            color: #888;
-            font-style: italic;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .bio {
-            font-size: 13px;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        /* Các nút mạng xã hội nằm trong khung */
-        .social-links {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .social-btn {
-            text-decoration: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: bold;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-        }
-
+/* Làm các nút bấm nhìn "xịn" hơn */
+.social-btn {
+    padding: 14px 0; /* Nút dày dặn hơn */
+    margin-bottom: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    letter-spacing: 0.5px; /* Giãn chữ ra một tí cho chuyên nghiệp */
+}
+        
         .social-btn i {
             margin-right: 10px;
             font-size: 16px;
