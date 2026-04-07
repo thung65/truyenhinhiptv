@@ -3,103 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trần Tất Khôi B - Trang Chủ</title>
+    <title>Trần Tất Khôi B - Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root {
-            --bg: #f4f6f8; --card: #ffffff; --text: #333; --accent: #007bff;
-            --border: #ececec; --item-hover: #f9f9f9;
-        }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        
-        .profile-section { text-align: center; padding: 40px 20px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
-        .profile-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); padding: 3px; margin-bottom: 15px; }
-        .profile-name { font-size: 22px; font-weight: bold; margin: 0; text-transform: uppercase; }
-        
-        /* PHẦN KHUNG MẠNG XÃ HỘI DẠNG Ô (GRID) */
-        .social-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Chia làm 2 cột đều nhau */
-            gap: 10px;
-            width: 100%;
-            max-width: 320px;
-            margin-top: 25px;
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f0f2f5; /* Nền xám nhạt để làm nổi cái khung trắng */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .social-item {
-            text-decoration: none;
+        /* ĐÂY LÀ CÁI KHUNG MÀ KHÔI MUỐN */
+        .main-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 350px;
+            padding: 40px 25px;
+            border-radius: 20px; /* Bo góc cực mượt */
+            /* Đổ bóng sâu để tạo hiệu ứng nổi (nhìn rất giống ảnh mẫu) */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); 
+            text-align: center;
+        }
+
+        .profile-logo {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            border: 1px solid #eee;
+            padding: 3px;
+            margin-bottom: 15px;
+        }
+
+        .name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+
+        .sub-title {
+            font-size: 12px;
+            color: #888;
+            font-style: italic;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .bio {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Các nút mạng xã hội nằm trong khung */
+        .social-links {
             display: flex;
-            flex-direction: column; /* Icon ở trên, chữ ở dưới */
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .social-btn {
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 15px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 12px; /* Bo góc khung */
             transition: 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
-        .social-item i {
-            font-size: 24px;
-            margin-bottom: 8px;
+        .social-btn i {
+            margin-right: 10px;
+            font-size: 16px;
         }
 
-        /* Màu sắc tinh tế cho từng ô khi di chuột vào */
-        .social-item:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
-        
-        .fb-item i { color: #1877F2; }
-        .tk-item i { color: #000; }
-        .gh-item i { color: #333; }
-        .yt-item i { color: #F00; }
+        .btn-fb { background: #1877F2; }
+        .btn-gh { background: #24292e; }
+        .btn-tk { background: #000; }
+        .btn-yt { background: #FF0000; }
 
-        .social-label {
-            font-size: 11px;
-            font-weight: bold;
-            color: #666;
-            text-transform: uppercase;
+        .social-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
         }
-
     </style>
 </head>
 <body>
 
-<div class="profile-section">
-    <img src="https://github.com/thung65.png" class="profile-logo" alt="Logo">
-    
-    <h1 class="profile-name">Trần Tất Khôi</h1>
-    
-    <p style="color: #666; font-style: italic; font-size: 13px; margin-top: 10px;">
-        Web Developer & Tech Enthusiast
-    </p>
-
-    <div class="social-grid">
-        <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="social-item fb-item">
-            <i class="fab fa-facebook"></i>
-            <span class="social-label">Facebook</span>
-        </a>
+    <div class="main-card">
+        <img src="https://github.com/thung65.png" class="profile-logo" alt="Logo">
         
-        <a href="https://www.tiktok.com/@tranthai845" target="_blank" class="social-item tk-item">
-            <i class="fab fa-tiktok"></i>
-            <span class="social-label">TikTok</span>
-        </a>
-
-        <a href="https://github.com/thung65" target="_blank" class="social-item gh-item">
-            <i class="fab fa-github"></i>
-            <span class="social-label">GitHub</span>
-        </a>
-
-        <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="social-item yt-item">
-            <i class="fab fa-youtube"></i>
-            <span class="social-label">YouTube</span>
-        </a>
+        <h1 class="name">Trần Tất Khôi</h1>
+        <span class="sub-title">Web Developer & Tech Enthusiast</span>
+        
+        <p class="bio">
+            Chào mừng bạn đã ghé thăm trang cá nhân của mình. <br>
+            Mình yêu thích lập trình, sáng tạo nội dung và kết nối với mọi người.
+        </p>
+        
+        <div class="social-links">
+            <a href="https://facebook.com/..." target="_blank" class="social-btn btn-fb">
+                <i class="fab fa-facebook"></i> Facebook
+            </a>
+            <a href="https://github.com/..." target="_blank" class="social-btn btn-gh">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+            <a href="https://tiktok.com/..." target="_blank" class="social-btn btn-tk">
+                <i class="fab fa-tiktok"></i> TikTok
+            </a>
+            <a href="https://youtube.com/..." target="_blank" class="social-btn btn-yt">
+                <i class="fab fa-youtube"></i> YouTube
+            </a>
+        </div>
     </div>
-
-    <p style="max-width: 450px; font-size: 14px; color: #777; line-height: 1.6; margin-top: 30px;">
-        Chào mừng bạn đã ghé thăm trang cá nhân của mình. <br>
-        Kết nối với Khôi qua các ô phía trên nhé!
-    </p>
-</div>
-
-</body>
+    </body>
 </html>
