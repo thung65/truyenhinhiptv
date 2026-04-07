@@ -3,140 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trần Tất Khôi B - Profile</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Trần Tất Khôi - Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* 1. Thiết lập nền trang */
         body {
-            margin: 0;
-            padding: 0;
-            background: #f0f2f5; /* Nền xám nhạt để làm nổi khung trắng */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
         }
-
-        /* 2. CÁI KHUNG CHÍNH (CARD) - Đã chỉnh to và thoáng hơn */
-        .main-card {
-            background: #ffffff;
-            width: 90%;
-            max-width: 400px; /* Độ rộng lý tưởng cho điện thoại */
-            padding: 50px 30px; /* Khoảng cách bên trong cực thoáng */
-            border-radius: 28px; /* Bo góc tròn hiện đại */
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1); /* Đổ bóng sâu tạo độ nổi */
+        .card {
+            background: #fff;
+            padding: 2.5rem; /* Tăng padding một chút cho thoáng như Khôi muốn */
+            border-radius: 20px; /* Bo góc mượt hơn */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); /* Đổ bóng sâu hơn cho nổi */
             text-align: center;
-            box-sizing: border-box;
+            max-width: 400px;
+            width: 90%;
         }
-
-        /* 3. Ảnh đại diện */
-        .profile-logo {
-            width: 100px;
-            height: 100px;
+        .avatar {
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
-            border: 1px solid #eee;
-            padding: 4px;
-            margin-bottom: 20px;
             object-fit: cover;
+            border: 3px solid #007bff;
+            margin-bottom: 1.2rem;
+            padding: 3px;
         }
-
-        /* 4. Tên và giới thiệu */
-        .name {
-            font-size: 24px;
-            font-weight: bold;
+        h1 {
+            margin: 10px 0;
             color: #222;
-            margin: 0 0 5px 0;
+            font-size: 22px;
             text-transform: uppercase;
         }
-
-        .sub-title {
+        .role {
+            color: #007bff;
+            font-weight: 600;
             font-size: 13px;
-            color: #888;
-            font-style: italic;
-            margin-bottom: 20px;
-            display: block;
+            margin-bottom: 15px;
         }
-
         .bio {
-            font-size: 14.5px;
             color: #555;
-            line-height: 1.7;
-            margin-bottom: 35px; /* Khoảng trống trước các nút */
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 25px;
         }
-
-        /* 5. Danh sách các nút mạng xã hội (Dạng khung nút dài) */
         .social-links {
             display: flex;
             flex-direction: column;
-            gap: 12px; /* Khoảng cách giữa các nút */
+            gap: 12px;
         }
-
-        .social-btn {
-            text-decoration: none;
-            padding: 14px 0;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-            color: white;
+        .social-item {
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-
-        .social-btn i {
-            margin-right: 12px;
-            font-size: 18px;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Màu sắc chuẩn thương hiệu */
-        .btn-fb { background: #1877F2; }
-        .btn-gh { background: #24292e; }
-        .btn-tk { background: #000000; }
-        .btn-yt { background: #FF0000; }
-
-        /* Hiệu ứng khi chạm/di chuột vào */
-        .social-btn:hover {
+        .social-item:hover {
             transform: translateY(-3px);
             filter: brightness(1.1);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .social-item i {
+            margin-right: 12px;
+            font-size: 1.3rem;
+            width: 20px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <div class="main-card">
-        <img src="https://github.com/thung65.png" class="profile-logo" alt="Logo">
+    <div class="card">
+        <img src="https://github.com/thung65.png" alt="Avatar" class="avatar">
         
-        <h1 class="name">Trần Tất Khôi</h1>
-        <span class="sub-title">Web Developer & Tech Enthusiast</span>
+        <h1>Trần Tất Khôi</h1>
+        <div class="role">Web Developer & Tech Enthusiast</div>
         
         <p class="bio">
-            Chào mừng bạn đã ghé thăm trang cá nhân của mình.<br>
+            Chào mừng bạn đã ghé thăm trang cá nhân của mình. <br>
             Mình yêu thích lập trình, sáng tạo nội dung và kết nối với mọi người.
         </p>
-        
+
         <div class="social-links">
-            <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="social-btn btn-fb">
-                <i class="fab fa-facebook"></i> Facebook
+            <a href="https://www.facebook.com/share/18WousdjEC/" class="social-item" target="_blank" style="background-color: #1877F2;">
+                <i class="fab fa-facebook-f"></i> Facebook
             </a>
             
-            <a href="https://github.com/thung65" target="_blank" class="social-btn btn-gh">
+            <a href="https://github.com/thung65" class="social-item" target="_blank" style="background-color: #24292e;">
                 <i class="fab fa-github"></i> GitHub
             </a>
             
-            <a href="https://www.tiktok.com/@tranthai845" target="_blank" class="social-btn btn-tk">
+            <a href="https://www.tiktok.com/@tranthai845" class="social-item" target="_blank" style="background-color: #000000;">
                 <i class="fab fa-tiktok"></i> TikTok
             </a>
             
-            <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="social-btn btn-yt">
+            <a href="https://www.youtube.com/@trantatkhoi2k14" class="social-item" target="_blank" style="background-color: #FF0000;">
                 <i class="fab fa-youtube"></i> YouTube
             </a>
         </div>
     </div>
-    </body>
+
+</body>
 </html>
