@@ -12,26 +12,40 @@
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
         
-        /* PHẦN BIO VÀ NÚT MẠNG XÃ HỘI (THU BÉ & CĂN GIỮA) */
         .profile-section { text-align: center; padding: 40px 20px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
         .profile-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); padding: 3px; margin-bottom: 15px; }
         .profile-name { font-size: 22px; font-weight: bold; margin: 0; text-transform: uppercase; }
         
-        .social-links { margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 250px; }
-        .social-btn { text-decoration: none; width: 100%; padding: 8px 0; border-radius: 6px; font-size: 12px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; width: 100%; }
+        /* PHẦN ICON MẠNG XÃ HỘI NHỎ (DẠNG NGANG) */
+        .social-mini {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .mini-icon {
+            text-decoration: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #f0f2f5;
+            color: #555;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        .mini-icon:hover { transform: translateY(-3px); color: white; }
+        .fb:hover { background: #1877F2; }
+        .tk:hover { background: #000; }
+        .gh:hover { background: #333; }
+        .yt:hover { background: #F00; }
+
+        /* NÚT BẤM DÀI (NẾU MUỐN GIỮ) */
+        .social-links { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 250px; }
+        .social-btn { text-decoration: none; width: 100%; padding: 10px 0; border-radius: 8px; font-size: 12px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
         .btn-fb { background: #1877F2; } .btn-tk { background: #000; } .btn-gh { background: #333; } .btn-yt { background: #F00; }
-        .social-btn i { font-size: 16px; margin-right: 10px; width: 18px; text-align: center; }
-
-        /* DANH SÁCH THƯ MỤC (FOLDER LIST) */
-        .container { max-width: 800px; margin: 25px auto; background: var(--card); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border); width: 95%; }
-        .intro-header { background: #fff; padding: 15px 20px; border-bottom: 1px solid var(--border); color: var(--accent); font-weight: bold; font-size: 14px; display: flex; align-items: center; }
-
-        .folder-item { display: flex; align-items: center; padding: 15px 20px; text-decoration: none; color: var(--text); border-bottom: 1px solid var(--border); transition: 0.2s; }
-        .folder-item:last-child { border-bottom: none; }
-        .folder-item:hover { background: var(--item-hover); }
-        .folder-item i { color: var(--folder-icon); font-size: 22px; margin-right: 15px; }
-        .folder-name { flex-grow: 1; font-weight: 500; font-size: 15px; }
-        .folder-date { font-size: 12px; color: #999; font-family: monospace; }
+        .social-btn i { font-size: 16px; margin-right: 10px; }
     </style>
 </head>
 <body>
@@ -41,24 +55,27 @@
     
     <h1 class="profile-name">Trần Tất Khôi</h1>
     
-    <p style="color: #666; font-style: italic; font-size: 14px; margin: 10px 0 20px 0; text-align: center;">
+    <p style="color: #666; font-style: italic; font-size: 14px; margin: 10px 0 5px 0;">
         Web Developer & Tech Enthusiast
     </p>
+
+    <div class="social-mini">
+        <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="mini-icon fb"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.tiktok.com/@tranthai845" target="_blank" class="mini-icon tk"><i class="fab fa-tiktok"></i></a>
+        <a href="https://github.com/thung65" target="_blank" class="mini-icon gh"><i class="fab fa-github"></i></a>
+        <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="mini-icon yt"><i class="fab fa-youtube"></i></a>
+    </div>
     
-    <p style="max-width: 450px; font-size: 14px; color: #555; line-height: 1.6; margin: 0 auto 30px auto; text-align: center; padding: 0 15px;">
+    <p style="max-width: 450px; font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px;">
         Chào mừng bạn đã ghé thăm trang cá nhân của mình. <br>
-        Mình yêu thích lập trình, sáng tạo nội dung và kết nối với <br>
-        mọi người.
+        Mình yêu thích lập trình và sáng tạo nội dung.
     </p>
     
     <div class="social-links">
         <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="social-btn btn-fb"><i class="fab fa-facebook-f"></i> FACEBOOK</a>
         <a href="https://www.tiktok.com/@tranthai845" target="_blank" class="social-btn btn-tk"><i class="fab fa-tiktok"></i> TIKTOK</a>
-        <a href="https://github.com/thung65" target="_blank" class="social-btn btn-gh"><i class="fab fa-github"></i> GITHUB</a>
-        <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="social-btn btn-yt"><i class="fab fa-youtube"></i> YOUTUBE</a>
     </div>
 </div>
 
-<script>
 </body>
 </html>
