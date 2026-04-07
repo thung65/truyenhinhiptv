@@ -6,69 +6,104 @@
     <title>Trần Tất Khôi B - Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* 1. Thiết lập nền trang */
         body {
             margin: 0;
             padding: 0;
-            background: #f0f2f5; /* Nền xám nhạt để làm nổi cái khung trắng */
+            background: #f0f2f5; /* Nền xám nhạt để làm nổi khung trắng */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        } 
-        
-/* Tìm đến đoạn CSS của Card và thay bằng cái này */
-.main-card {
-    background: #ffffff;
-    width: 90%;
-    max-width: 380px; /* Tăng độ rộng lên một tí */
-    padding: 50px 35px; /* Tăng khoảng cách bên trong cho thoáng */
-    border-radius: 24px; /* Bo góc tròn hơn nhìn sẽ hiện đại hơn */
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.1); /* Đổ bóng sâu hơn cho nổi */
-    text-align: center;
-    box-sizing: border-box; /* Đảm bảo padding không làm hỏng kích thước */
-}
-
-/* Khoảng cách giữa các phần bên trong */
-.profile-logo {
-    width: 100px; /* Cho logo to lên một tí */
-    height: 100px;
-    margin-bottom: 25px; /* Đẩy tên xuống xa hơn */
-}
-
-.name {
-    font-size: 24px; /* Tên to và rõ hơn */
-    margin-bottom: 10px;
-}
-
-.bio {
-    font-size: 14.5px;
-    margin-bottom: 35px; /* Tạo khoảng trống trước khi đến các nút */
-    line-height: 1.7;
-}
-
-/* Làm các nút bấm nhìn "xịn" hơn */
-.social-btn {
-    padding: 14px 0; /* Nút dày dặn hơn */
-    margin-bottom: 12px;
-    border-radius: 10px;
-    font-size: 14px;
-    letter-spacing: 0.5px; /* Giãn chữ ra một tí cho chuyên nghiệp */
-}
-        
-        .social-btn i {
-            margin-right: 10px;
-            font-size: 16px;
         }
 
+        /* 2. CÁI KHUNG CHÍNH (CARD) - Đã chỉnh to và thoáng hơn */
+        .main-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 400px; /* Độ rộng lý tưởng cho điện thoại */
+            padding: 50px 30px; /* Khoảng cách bên trong cực thoáng */
+            border-radius: 28px; /* Bo góc tròn hiện đại */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1); /* Đổ bóng sâu tạo độ nổi */
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* 3. Ảnh đại diện */
+        .profile-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 1px solid #eee;
+            padding: 4px;
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        /* 4. Tên và giới thiệu */
+        .name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #222;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+        }
+
+        .sub-title {
+            font-size: 13px;
+            color: #888;
+            font-style: italic;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .bio {
+            font-size: 14.5px;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 35px; /* Khoảng trống trước các nút */
+        }
+
+        /* 5. Danh sách các nút mạng xã hội (Dạng khung nút dài) */
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Khoảng cách giữa các nút */
+        }
+
+        .social-btn {
+            text-decoration: none;
+            padding: 14px 0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .social-btn i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Màu sắc chuẩn thương hiệu */
         .btn-fb { background: #1877F2; }
         .btn-gh { background: #24292e; }
-        .btn-tk { background: #000; }
+        .btn-tk { background: #000000; }
         .btn-yt { background: #FF0000; }
 
+        /* Hiệu ứng khi chạm/di chuột vào */
         .social-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
         }
     </style>
 </head>
@@ -81,21 +116,24 @@
         <span class="sub-title">Web Developer & Tech Enthusiast</span>
         
         <p class="bio">
-            Chào mừng bạn đã ghé thăm trang cá nhân của mình. <br>
+            Chào mừng bạn đã ghé thăm trang cá nhân của mình.<br>
             Mình yêu thích lập trình, sáng tạo nội dung và kết nối với mọi người.
         </p>
         
         <div class="social-links">
-            <a href="https://facebook.com/..." target="_blank" class="social-btn btn-fb">
+            <a href="https://www.facebook.com/share/18WousdjEC/" target="_blank" class="social-btn btn-fb">
                 <i class="fab fa-facebook"></i> Facebook
             </a>
-            <a href="https://github.com/..." target="_blank" class="social-btn btn-gh">
+            
+            <a href="https://github.com/thung65" target="_blank" class="social-btn btn-gh">
                 <i class="fab fa-github"></i> GitHub
             </a>
-            <a href="https://tiktok.com/..." target="_blank" class="social-btn btn-tk">
+            
+            <a href="https://www.tiktok.com/@tranthai845" target="_blank" class="social-btn btn-tk">
                 <i class="fab fa-tiktok"></i> TikTok
             </a>
-            <a href="https://youtube.com/..." target="_blank" class="social-btn btn-yt">
+            
+            <a href="https://www.youtube.com/@trantatkhoi2k14" target="_blank" class="social-btn btn-yt">
                 <i class="fab fa-youtube"></i> YouTube
             </a>
         </div>
